@@ -1,7 +1,15 @@
 'use strict';
-require('dotenv').config();
+'use strict';
+const path = require('path');
+
+const envPath = path.join(__dirname, '..', '.env');
+console.log("ENV PATH:", envPath);
+
+require('dotenv').config({ path: envPath });
+
+console.log("ENV FILE CHECK:", process.env.MONGO_URI);
 const express    = require('express');
-const path       = require('path');
+
 const fs         = require('fs');
 const mongoose   = require('mongoose');
 const session    = require('express-session');
@@ -20,8 +28,8 @@ const { verifyMailConnection } = require('./services/mailer');
 const app      = express();
 const PORT     = parseInt(process.env.PORT) || 3000;
 const FRONTEND = path.join(__dirname, '../frontend');
-const MONGO_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/fileforge';
-
+const MONGO_URI = process.env.MONGO_URI;
+console.log("Using Mongo URI:", MONGO_URI);
 app.set('trust proxy', 1);
 
 // ── Security ──────────────────────────────────────────────────
