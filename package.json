@@ -6,9 +6,8 @@
   "scripts": {
     "start": "node backend/server.js",
     "dev": "nodemon backend/server.js",
-    "migrate": "node database/migrate.js",
-    "setup": "bash setup.sh",
-},
+    "migrate": "node database/migrate.js"
+  },
   "dependencies": {
     "archiver": "^6.0.1",
     "bcryptjs": "^2.4.3",
