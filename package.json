@@ -8,8 +8,7 @@
     "dev": "nodemon backend/server.js",
     "migrate": "node database/migrate.js",
     "setup": "bash setup.sh",
-    "postinstall": "echo 'Render backend: installing system binaries...' && apt-get update && apt-get install -y ffmpeg ghostscript libreoffice imagemagick"
-  },
+},
   "dependencies": {
     "archiver": "^6.0.1",
     "bcryptjs": "^2.4.3",
