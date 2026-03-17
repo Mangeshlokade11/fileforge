@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Dashboard — FileForge</title>
+<link rel="stylesheet" href="/css/main.css">
+<style>
+.layout{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 64px)}
+/* sidebar */
+.sb{background:var(--bg-1);border-right:1px solid var(--border);padding:24px 0;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto}
+.sb-user{padding:0 18px 20px;border-bottom:1px solid var(--border);margin-bottom:12px}
+.sb-av{width:46px;height:46px;border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:900;font-size:15px;color:#000;margin-bottom:10px;box-shadow:0 0 12px rgba(0,245,255,.3)}
+.sb-name{font-family:var(--font-d);font-size:12px;font-weight:700;letter-spacing:.3px}
+.sb-email{font-size:11px;color:var(--text-3);margin-top:2px}
+.sb-plan{display:inline-block;margin-top:8px;padding:3px 10px;border-radius:99px;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;background:var(--neon-blue-dim);color:var(--neon-blue);border:1px solid rgba(0,245,255,.2)}
+.sb-nav{padding:0 8px}
+.sb-sec{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--text-3);padding:14px 10px 6px;text-transform:uppercase}
+.sb-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--r);font-size:12px;font-weight:600;color:var(--text-2);cursor:pointer;transition:all .2s;text-decoration:none;letter-spacing:.2px}
+.sb-item:hover{background:var(--bg-3);color:var(--text)}
+.sb-item.active{background:var(--neon-blue-dim);color:var(--neon-blue);border:1px solid rgba(0,245,255,.15)}
+.sb-usage{padding:14px 18px 0}
+.sb-use-top{display:flex;justify-content:space-between;font-size:10px;color:var(--text-3);margin-bottom:5px}
+.sb-use-bar{height:3px;background:var(--border);border-radius:99px;overflow:hidden}
+.sb-use-fill{height:100%;background:var(--grad);border-radius:99px;transition:width .6s ease;box-shadow:0 0 6px rgba(0,245,255,.5)}
+/* main */
+.main{padding:30px 34px;overflow-y:auto}
+.dash-greet{font-family:var(--font-d);font-size:clamp(16px,2.5vw,24px);font-weight:800;letter-spacing:.5px;line-height:1.2;margin-bottom:4px}
+.dash-sub{font-size:13px;color:var(--text-2);margin-bottom:26px}
+/* stats */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:26px}
+/* quick */
+.qgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:26px}
+.qcard{background:var(--bg-1);border:1px solid var(--border);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none;transition:all .2s}
+.qcard:hover{border-color:var(--qc,var(--neon-blue));transform:translateY(-2px)}
+.qicon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.qname{font-size:11px;font-weight:600;color:var(--text-2);text-align:center}
+/* history */
+.hcard{background:var(--bg-1);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+.hhead{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
+.htitle{font-family:var(--font-d);font-weight:700;font-size:12px;letter-spacing:.5px;text-transform:uppercase}
+.htbl{width:100%;border-collapse:collapse}
+.htbl th{text-align:left;padding:9px 16px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-3);background:var(--bg-2);border-bottom:1px solid var(--border)}
+.htbl td{padding:11px 16px;font-size:12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.htbl tr:last-child td{border-bottom:none}
+.htbl tr:hover td{background:var(--bg-2)}
+.hempty{padding:44px 20px;text-align:center;color:var(--text-3);font-size:13px}
+.delbtn{background:none;border:none;color:var(--text-3);cursor:pointer;padding:4px 6px;border-radius:6px;font-size:12px;transition:all .2s}
+.delbtn:hover{color:var(--neon-pink);background:var(--neon-pink-dim)}
+.pgn{display:none}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.sb{display:none}.stats-row{grid-template-columns:repeat(2,1fr)}.qgrid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:480px){.main{padding:18px 14px}.qgrid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div id="toast-container"></div>
+<nav class="nav" id="nav"></nav>
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sb">
+    <div class="sb-user">
+      <div class="sb-av" id="sb-av">--</div>
+      <div class="sb-name" id="sb-nm">Loading…</div>
+      <div class="sb-email" id="sb-em"></div>
+      <span class="sb-plan" id="sb-pl">Free</span>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-sec">Navigation</div>
+      <a href="/dashboard" class="sb-item active">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1" fill="currentColor" opacity=".7"/><rect x="8" y="1" width="5" height="5" rx="1" fill="currentColor" opacity=".5"/><rect x="1" y="8" width="5" height="5" rx="1" fill="currentColor" opacity=".5"/><rect x="8" y="8" width="5" height="5" rx="1" fill="currentColor" opacity=".7"/></svg>
+        Dashboard
+      </a>
+      <a href="/tools" class="sb-item">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 4h10M2 7h10M2 10h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        All Tools
+      </a>
+      <a href="/profile" class="sb-item">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="4.5" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 12c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Profile
+      </a>
+      <div class="sb-sec">By Category</div>
+      <a href="/tools?cat=pdf"       class="sb-item"><span style="color:var(--neon-blue);font-weight:900">◈</span> PDF</a>
+      <a href="/tools?cat=documents" class="sb-item"><span style="color:var(--neon-green);font-weight:900">◈</span> Documents</a>
+      <a href="/tools?cat=images"    class="sb-item"><span style="color:var(--neon-amber);font-weight:900">◈</span> Images</a>
+      <a href="/tools?cat=video"     class="sb-item"><span style="color:var(--neon-purple);font-weight:900">◈</span> Video</a>
+      <a href="/tools?cat=audio"     class="sb-item"><span style="color:var(--neon-pink);font-weight:900">◈</span> Audio</a>
+    </div>
+    <div class="sb-usage">
+      <div class="sb-use-top"><span>Monthly usage</span><span id="sb-use-txt">0/10</span></div>
+      <div class="sb-use-bar"><div class="sb-use-fill" id="sb-use-fill" style="width:0%"></div></div>
+    </div>
+  </aside>
+  <!-- Main -->
+  <main class="main">
+    <div class="dash-greet">
+      <span id="gt" class="grad-text"></span>, <span id="gn">there</span> 👋
+    </div>
+    <div class="dash-sub" id="gsub">Here's your conversion activity.</div>
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-value" id="st0">—</div><div class="stat-label">Total conversions</div></div>
+      <div class="stat-card"><div class="stat-value" id="st1">—</div><div class="stat-label">This month</div></div>
+      <div class="stat-card"><div class="stat-value" id="st2">—</div><div class="stat-label">Data processed</div></div>
+      <div class="stat-card"><div class="stat-value" id="st3">—</div><div class="stat-label">Plan</div></div>
+    </div>
+    <!-- Quick -->
+    <div class="flex-between" style="margin-bottom:12px">
+      <div style="font-family:var(--font-d);font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--text-2);text-transform:uppercase">Quick Convert</div>
+      <a href="/tools" style="color:var(--neon-blue);font-size:11px;letter-spacing:.4px">All tools →</a>
+    </div>
+    <div class="qgrid">
+      <a href="/tools?cat=pdf"       class="qcard" style="--qc:var(--neon-blue)">  <div class="qicon" style="background:var(--neon-blue-dim)">  <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="1" width="11" height="16" rx="2" stroke="var(--neon-blue)" stroke-width="1.5"/><path d="M9 1v6h6" stroke="var(--neon-blue)" stroke-width="1.3" opacity=".5"/></svg></div><div class="qname" style="color:var(--neon-blue)">Compress PDF</div></a>
+      <a href="/tools?cat=documents" class="qcard" style="--qc:var(--neon-green)"> <div class="qicon" style="background:var(--neon-green-dim)"> <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="9" height="13" rx="1.5" stroke="var(--neon-green)" stroke-width="1.5"/><rect x="9" y="5" width="9" height="13" rx="1.5" stroke="var(--neon-green)" stroke-width="1.5"/></svg></div><div class="qname" style="color:var(--neon-green)">Word → PDF</div></a>
+      <a href="/tools?cat=images"    class="qcard" style="--qc:var(--neon-amber)"> <div class="qicon" style="background:var(--neon-amber-dim)"> <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="1" y="4" width="18" height="12" rx="2" stroke="var(--neon-amber)" stroke-width="1.5"/><circle cx="6" cy="8" r="2" fill="var(--neon-amber)" opacity=".5"/><path d="M1 12l4-3 4 3 4-2 6 4H1z" fill="var(--neon-amber)" opacity=".35"/></svg></div><div class="qname" style="color:var(--neon-amber)">Compress Image</div></a>
+      <a href="/tools?cat=video"     class="qcard" style="--qc:var(--neon-purple)"><div class="qicon" style="background:var(--neon-purple-dim)"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="1" y="4" width="13" height="12" rx="2" stroke="var(--neon-purple)" stroke-width="1.5"/><path d="M14 8l6-3v10l-6-3V8z" stroke="var(--neon-purple)" stroke-width="1.5" stroke-linejoin="round"/></svg></div><div class="qname" style="color:var(--neon-purple)">MP4 → MP3</div></a>
+      <a href="/tools?cat=audio"     class="qcard" style="--qc:var(--neon-pink)">  <div class="qicon" style="background:var(--neon-pink-dim)">  <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 14V6M8 16V4M12 14V6M16 16V4" stroke="var(--neon-pink)" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="qname" style="color:var(--neon-pink)">MP3 → WAV</div></a>
+      <a href="/tools?cat=pdf"       class="qcard" style="--qc:var(--neon-blue)">  <div class="qicon" style="background:var(--neon-blue-dim)">  <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="1" y="3" width="7" height="10" rx="1.5" stroke="var(--neon-blue)" stroke-width="1.5"/><rect x="12" y="3" width="7" height="10" rx="1.5" stroke="var(--neon-blue)" stroke-width="1.5"/><path d="M8 8h4" stroke="var(--neon-blue)" stroke-width="1.2" opacity=".5"/></svg></div><div class="qname" style="color:var(--neon-blue)">Merge PDFs</div></a>
+      <a href="/tools?cat=images"    class="qcard" style="--qc:var(--neon-amber)"> <div class="qicon" style="background:var(--neon-amber-dim)"> <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="1" y="1" width="8" height="7" rx="1.5" stroke="var(--neon-amber)" stroke-width="1.5"/><rect x="8" y="8" width="11" height="11" rx="2" fill="rgba(255,184,0,.12)" stroke="var(--neon-amber)" stroke-width="1.5"/></svg></div><div class="qname" style="color:var(--neon-amber)">Resize Image</div></a>
+      <a href="/tools"               class="qcard" style="--qc:var(--text-2)">      <div class="qicon" style="background:var(--bg-3)">           <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="var(--text-2)" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="qname">All 26 tools</div></a>
+    </div>
+    <!-- History -->
+    <div class="flex-between" style="margin-bottom:12px">
+      <div style="font-family:var(--font-d);font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--text-2);text-transform:uppercase">Recent Conversions</div>
+      <button class="btn btn-outline btn-sm" onclick="loadHistory()">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 6a5 5 0 109-3M11 2v3H8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Refresh
+      </button>
+    </div>
+    <div class="hcard"><div id="hbody"><div class="hempty"><div class="spinner" style="margin:0 auto 10px"></div>Loading…</div></div></div>
+    <div class="flex-between mt-16 pgn" id="pgn">
+      <button class="btn btn-outline btn-sm" id="prev-btn" disabled>← Prev</button>
+      <span class="text-sm muted" id="pinfo"></span>
+      <button class="btn btn-outline btn-sm" id="next-btn">Next →</button>
+    </div>
+  </main>
+</div>
+<script src="/js/app.js"></script>
+<script>
+requireAuth();
+renderNav('dashboard');
+var pg = 1;
+var hr = new Date().getHours();
+document.getElementById('gt').textContent = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
+
+async function loadUser() {
+  try {
+    var d = await apiFetch('/api/auth/me');
+    var u = d.user;
+    Auth.setSession(Auth.getToken(), u);
+    var init = ((u.firstName||'')[0]+(u.lastName||'')[0]).toUpperCase();
+    document.getElementById('sb-av').textContent = init;
+    document.getElementById('sb-nm').textContent = u.firstName+' '+u.lastName;
+    document.getElementById('sb-em').textContent = u.email;
+    document.getElementById('sb-pl').textContent = u.plan;
+    var pct = Math.min(100, Math.round(((u.monthlyCount||0)/10)*100));
+    document.getElementById('sb-use-txt').textContent = (u.monthlyCount||0)+'/10';
+    document.getElementById('sb-use-fill').style.width = pct+'%';
+    document.getElementById('gn').textContent = u.firstName;
+    document.getElementById('gsub').textContent = (u.totalConversions||0)+' total · '+(u.monthlyCount||0)+' this month';
+    document.getElementById('st0').textContent = u.totalConversions||0;
+    document.getElementById('st1').textContent = (u.monthlyCount||0)+'/10';
+    document.getElementById('st2').textContent = formatBytes(u.storageUsed||0);
+    document.getElementById('st3').textContent = (u.plan||'free').charAt(0).toUpperCase()+(u.plan||'free').slice(1);
+  } catch(e) { if(e.status===401){Auth.clearSession();window.location.href='/login';} }
+}
+
+async function loadHistory() {
+  document.getElementById('hbody').innerHTML = '<div class="hempty"><div class="spinner" style="margin:0 auto 10px"></div>Loading…</div>';
+  try {
+    var d = await apiFetch('/api/history?page='+pg+'&limit=15');
+    if (!d.items||!d.items.length) {
+      document.getElementById('hbody').innerHTML = '<div class="hempty">No conversions yet. <a href="/tools" style="color:var(--neon-blue)">Start converting →</a></div>';
+      document.getElementById('pgn').style.display='none'; return;
+    }
+    var rows = d.items.map(function(it) {
+      var dl = it.status==='done'
+        ? '<a href="/api/download/'+it.downloadToken+'" class="btn btn-secondary btn-sm" download="'+it.outputName+'" target="_blank">↓</a>'
+        : '—';
+      return '<tr><td><div style="font-weight:600" class="truncate">'+it.originalName+'</div><div style="font-size:10px;color:var(--text-3)">'+formatBytes(it.originalSize)+'</div></td>' +
+        '<td style="font-weight:600">'+it.toolName+'</td>' +
+        '<td><div class="truncate" style="max-width:130px;font-size:12px">'+(it.outputName||'—')+'</div>'+(it.outputSize?'<div style="font-size:10px;color:var(--text-3)">'+formatBytes(it.outputSize)+'</div>':'')+'</td>' +
+        '<td><span class="status-pill '+it.status+'">'+it.status+'</span></td>' +
+        '<td style="color:var(--text-3);font-size:11px">'+timeAgo(it.createdAt)+'</td>' +
+        '<td>'+dl+'</td>' +
+        '<td><button class="delbtn" onclick="delItem(\''+it._id+'\',this)">🗑</button></td></tr>';
+    }).join('');
+    document.getElementById('hbody').innerHTML =
+      '<table class="htbl"><thead><tr><th>File</th><th>Tool</th><th>Output</th><th>Status</th><th>When</th><th>DL</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>';
+    if (d.pages>1) {
+      document.getElementById('pgn').style.display='flex';
+      document.getElementById('pinfo').textContent='Page '+d.page+' of '+d.pages;
+      document.getElementById('prev-btn').disabled = d.page<=1;
+      document.getElementById('next-btn').disabled = d.page>=d.pages;
+    }
+  } catch(e) { document.getElementById('hbody').innerHTML='<div class="hempty" style="color:var(--neon-pink)">Error: '+e.message+'</div>'; }
+}
+
+async function delItem(id, btn) {
+  if (!confirm('Delete this record?')) return;
+  btn.disabled=true;
+  try { await apiFetch('/api/history/'+id,{method:'DELETE'}); Toast.success('Deleted'); loadHistory(); }
+  catch { btn.disabled=false; Toast.error('Delete failed'); }
+}
+
+document.getElementById('prev-btn').addEventListener('click', function(){ pg--; loadHistory(); });
+document.getElementById('next-btn').addEventListener('click', function(){ pg++; loadHistory(); });
+
+loadUser();
+loadHistory();
+</script>
+</body>
+</html>

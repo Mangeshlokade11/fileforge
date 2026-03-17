@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FileForge — Professional File Conversion Platform</title>
+<link rel="stylesheet" href="/css/main.css">
+<style>
+.hero{padding:96px 40px 80px;text-align:center;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(0,245,255,.1) 0%,transparent 65%),radial-gradient(ellipse 50% 40% at 80% 70%,rgba(180,78,255,.07) 0%,transparent 60%)}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.2;mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,black,transparent)}
+.hero-inner{position:relative;z-index:1}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:99px;background:var(--neon-blue-dim);border:1px solid rgba(0,245,255,.25);font-size:11px;font-weight:700;color:var(--neon-blue);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:26px;animation:fadeUp .6s ease}
+.hero-title{font-family:var(--font-d);font-size:clamp(34px,7vw,72px);font-weight:900;letter-spacing:-2px;line-height:1.05;margin-bottom:18px;animation:fadeUp .7s ease .1s both}
+.hero-hl{background:linear-gradient(135deg,#00f5ff 0%,#b44eff 50%,#ff2d78 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 28px rgba(0,245,255,.3))}
+.hero-sub{font-size:clamp(14px,2vw,17px);color:var(--text-2);max-width:520px;margin:0 auto 36px;line-height:1.7;animation:fadeUp .7s ease .2s both}
+.hero-ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fadeUp .7s ease .3s both}
+.mq-outer{overflow:hidden;padding:16px 0;mask-image:linear-gradient(90deg,transparent,black 8%,black 92%,transparent)}
+.mq-track{display:flex;gap:10px;width:max-content;animation:marquee 32s linear infinite}
+.mq-outer:hover .mq-track{animation-play-state:paused}
+.mq-chip{display:flex;align-items:center;gap:7px;padding:7px 16px;background:var(--bg-1);border:1px solid var(--border-2);border-radius:99px;font-size:12px;font-weight:500;white-space:nowrap;color:var(--text-2)}
+.mq-dot{width:5px;height:5px;border-radius:50%;background:var(--neon-blue);box-shadow:0 0 6px var(--neon-blue)}
+@keyframes marquee{to{transform:translateX(-50%)}}
+.cgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.ccard{background:var(--bg-1);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px 14px;text-align:center;text-decoration:none;display:block;transition:all .25s;position:relative;overflow:hidden}
+.ccard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--cc-grad,var(--grad));opacity:0;transition:opacity .3s}
+.ccard:hover{transform:translateY(-5px);border-color:var(--cc,var(--neon-blue));box-shadow:0 12px 32px rgba(0,0,0,.5)}
+.ccard:hover::before{opacity:1}
+.cicon{width:52px;height:52px;margin:0 auto 12px}
+.cname{font-family:var(--font-d);font-weight:700;font-size:11px;letter-spacing:.5px;margin-bottom:3px}
+.ctools{font-size:11px;color:var(--text-3);font-family:var(--font-m)}
+.fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.fcard{background:var(--bg-1);border:1px solid var(--border);border-radius:var(--r-lg);padding:26px;position:relative;overflow:hidden}
+.fcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--fc-g,var(--grad));opacity:0;transition:opacity .3s}
+.fcard:hover::before{opacity:1}
+.ficon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.ftitle{font-family:var(--font-d);font-weight:700;font-size:13px;letter-spacing:.3px;margin-bottom:8px}
+.fdesc{font-size:13px;color:var(--text-2);line-height:1.7}
+.cta-sec{text-align:center;padding:80px 40px;position:relative;overflow:hidden}
+.cta-sec::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 50% 50%,rgba(180,78,255,.06) 0%,transparent 70%);pointer-events:none}
+.cta-inner{position:relative;z-index:1}
+.cta-title{font-family:var(--font-d);font-size:clamp(22px,4vw,38px);font-weight:900;letter-spacing:-1px;margin-bottom:12px}
+footer{text-align:center;padding:26px;border-top:1px solid var(--border);color:var(--text-3);font-size:12px;letter-spacing:.3px}
+@media(max-width:900px){.cgrid{grid-template-columns:repeat(3,1fr)}.fgrid{grid-template-columns:1fr}}
+@media(max-width:540px){.hero{padding:56px 18px 60px}.cgrid{grid-template-columns:repeat(2,1fr)}.hero-ctas{flex-direction:column;align-items:center}}
+</style>
+</head>
+<body>
+<div id="toast-container"></div>
+<nav class="nav" id="nav"></nav>
+<section class="hero">
+  <div class="hero-bg"></div><div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="hero-badge">⚡ 26 professional tools · All formats</div>
+    <h1 class="hero-title">Convert any file<br><span class="hero-hl">in seconds.</span></h1>
+    <p class="hero-sub">PDF, Word, Images, Video, Audio — real server-side conversions powered by FFmpeg, LibreOffice &amp; Ghostscript. No watermarks.</p>
+    <div class="hero-ctas">
+      <a href="/tools"  class="btn btn-primary btn-xl" id="start-btn">Start converting →</a>
+      <a href="/signup" class="btn btn-outline btn-xl" id="signup-btn">Create free account</a>
+    </div>
+  </div>
+</section>
+<div class="mq-outer"><div class="mq-track" id="mq"></div></div>
+<section class="section">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:34px">
+      <div style="font-family:var(--font-d);font-size:10px;font-weight:700;letter-spacing:3px;color:var(--neon-blue);margin-bottom:10px;text-transform:uppercase">// Tool Categories</div>
+      <div class="section-title">Every format, <span class="grad-text">covered.</span></div>
+    </div>
+    <div class="cgrid">
+      <a href="/tools?cat=pdf"       class="ccard" style="--cc:var(--neon-blue);--cc-grad:linear-gradient(90deg,var(--neon-blue),var(--neon-purple))">
+        <svg class="cicon" viewBox="0 0 52 52" fill="none"><rect x="8" y="4" width="28" height="38" rx="4" fill="#0f0f18" stroke="var(--neon-blue)" stroke-width="1.5" opacity=".5"/><path d="M24 4v12h12" stroke="var(--neon-blue)" stroke-width="1.5" opacity=".4"/><rect x="12" y="22" width="16" height="2.5" rx="1.25" fill="var(--neon-blue)" opacity=".5"/><rect x="12" y="28" width="20" height="2.5" rx="1.25" fill="var(--neon-blue)" opacity=".35"/></svg>
+        <div class="cname" style="color:var(--neon-blue)">PDF Tools</div><div class="ctools">6 tools</div>
+      </a>
+      <a href="/tools?cat=documents" class="ccard" style="--cc:var(--neon-green);--cc-grad:linear-gradient(90deg,var(--neon-green),var(--neon-blue))">
+        <svg class="cicon" viewBox="0 0 52 52" fill="none"><rect x="4" y="6" width="24" height="34" rx="3" fill="#0f0f18" stroke="var(--neon-green)" stroke-width="1.5" opacity=".5"/><rect x="22" y="16" width="22" height="28" rx="3" fill="rgba(0,255,157,.08)" stroke="var(--neon-green)" stroke-width="1.5"/><rect x="8" y="16" width="12" height="2" rx="1" fill="var(--neon-green)" opacity=".5"/></svg>
+        <div class="cname" style="color:var(--neon-green)">Documents</div><div class="ctools">6 tools</div>
+      </a>
+      <a href="/tools?cat=images"    class="ccard" style="--cc:var(--neon-amber);--cc-grad:linear-gradient(90deg,var(--neon-amber),var(--neon-pink))">
+        <svg class="cicon" viewBox="0 0 52 52" fill="none"><rect x="2" y="10" width="42" height="32" rx="5" fill="#0f0f18" stroke="var(--neon-amber)" stroke-width="1.5" opacity=".5"/><circle cx="13" cy="20" r="5" fill="var(--neon-amber)" opacity=".45"/><path d="M2 32l12-10 10 8 10-7 16 11H2z" fill="var(--neon-amber)" opacity=".3"/></svg>
+        <div class="cname" style="color:var(--neon-amber)">Images</div><div class="ctools">6 tools</div>
+      </a>
+      <a href="/tools?cat=video"     class="ccard" style="--cc:var(--neon-purple);--cc-grad:linear-gradient(90deg,var(--neon-purple),var(--neon-pink))">
+        <svg class="cicon" viewBox="0 0 52 52" fill="none"><rect x="2" y="12" width="36" height="28" rx="5" fill="#0f0f18" stroke="var(--neon-purple)" stroke-width="1.5" opacity=".5"/><polygon points="14,18 14,34 30,26" fill="var(--neon-purple)" opacity=".65"/><path d="M38 18l14-6v28l-14-6V18z" fill="rgba(180,78,255,.12)" stroke="var(--neon-purple)" stroke-width="1.2"/></svg>
+        <div class="cname" style="color:var(--neon-purple)">Video</div><div class="ctools">4 tools</div>
+      </a>
+      <a href="/tools?cat=audio"     class="ccard" style="--cc:var(--neon-pink);--cc-grad:linear-gradient(90deg,var(--neon-pink),var(--neon-purple))">
+        <svg class="cicon" viewBox="0 0 52 52" fill="none"><circle cx="26" cy="26" r="22" fill="#0a0a10" stroke="var(--neon-pink)" stroke-width="1.5" opacity=".4"/><path d="M14 26v-6M19 26v-11M24 26v-14M29 26v-14M34 26v-11M39 26v-6" stroke="var(--neon-pink)" stroke-width="2.5" stroke-linecap="round"/></svg>
+        <div class="cname" style="color:var(--neon-pink)">Audio</div><div class="ctools">4 tools</div>
+      </a>
+    </div>
+  </div>
+</section>
+<section class="section" style="padding-top:10px">
+  <div class="container">
+    <div class="fgrid">
+      <div class="fcard" style="--fc-g:linear-gradient(90deg,var(--neon-blue),transparent)">
+        <div class="ficon" style="background:var(--neon-blue-dim)"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2L3 12h7l-1 6 10-11h-8l1-6z" fill="var(--neon-blue)" opacity=".3" stroke="var(--neon-blue)" stroke-width="1.3" stroke-linejoin="round"/></svg></div>
+        <div class="ftitle" style="color:var(--neon-blue)">Lightning fast</div>
+        <div class="fdesc">Real server-side processing via FFmpeg, LibreOffice, Ghostscript &amp; Sharp. Files convert in seconds.</div>
+      </div>
+      <div class="fcard" style="--fc-g:linear-gradient(90deg,var(--neon-purple),transparent)">
+        <div class="ficon" style="background:var(--neon-purple-dim)"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="9" width="14" height="9" rx="2" stroke="var(--neon-purple)" stroke-width="1.5"/><path d="M6 9V6a4 4 0 018 0v3" stroke="var(--neon-purple)" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <div class="ftitle" style="color:var(--neon-purple)">Secure &amp; private</div>
+        <div class="fdesc">JWT auth, bcrypt passwords, Google OAuth, files auto-deleted after 2 hours. Your data stays private.</div>
+      </div>
+      <div class="fcard" style="--fc-g:linear-gradient(90deg,var(--neon-green),transparent)">
+        <div class="ficon" style="background:var(--neon-green-dim)"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 10l4 4 10-8" stroke="var(--neon-green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="ftitle" style="color:var(--neon-green)">Email delivery</div>
+        <div class="fdesc">Converted files emailed to your inbox. Welcome emails on signup, security alerts on login.</div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="cta-sec">
+  <div class="cta-inner">
+    <div class="cta-title">Ready to <span class="grad-text">forge files?</span></div>
+    <p class="muted" style="font-size:14px;margin-bottom:30px">Free plan · 26 tools · 10 conversions/month · No credit card</p>
+    <a href="/signup" class="btn btn-primary btn-xl" id="cta-btn">Create free account →</a>
+  </div>
+</section>
+<footer>© 2025 FileForge · All rights reserved</footer>
+<script src="/js/app.js"></script>
+<script>
+renderNav('home');
+if (Auth.isLoggedIn()) {
+  document.getElementById('signup-btn').href='/dashboard';
+  document.getElementById('signup-btn').textContent='Go to dashboard';
+  document.getElementById('cta-btn').href='/dashboard';
+  document.getElementById('cta-btn').textContent='Go to dashboard →';
+}
+var CHIPS=['PDF Compress','Word → PDF','JPG → PNG','MP4 → MP3','FLAC → MP3','PDF → Word','Excel → PDF','PNG → JPG','Video → MP4','WAV → MP3','Merge PDF','PPT → PDF','Resize Image','Compress Video','Audio → WAV','Split PDF','HTML → PDF','Image → WebP','MP4 → WebM','Compress Audio','CSV → Excel','Image → PDF','Protect PDF'];
+var mq=document.getElementById('mq');
+mq.innerHTML=CHIPS.concat(CHIPS).map(function(c){return '<div class="mq-chip"><span class="mq-dot"></span>'+c+'</div>';}).join('');
+</script>
+</body>
+</html>

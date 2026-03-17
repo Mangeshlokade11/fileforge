@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>All Tools — FileForge</title>
+<link rel="stylesheet" href="/css/main.css">
+<style>
+/* ── Page hero ─────────────────────────────────────── */
+.hero{padding:52px 40px 36px;border-bottom:1px solid var(--border);position:relative;background:linear-gradient(180deg,rgba(0,245,255,.04) 0%,transparent 100%)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--neon-blue) 35%,var(--neon-purple) 65%,transparent);box-shadow:0 0 20px rgba(0,245,255,.5)}
+.hero-tag{font-family:var(--font-d);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--neon-blue);margin-bottom:10px}
+.hero h1{font-family:var(--font-d);font-size:clamp(20px,3.5vw,34px);font-weight:900;letter-spacing:-.5px;line-height:1.15;margin-bottom:8px}
+.hero p{color:var(--text-2);font-size:14px}
+
+/* ── Filter bar ────────────────────────────────────── */
+.fbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px}
+.ftab{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;background:var(--bg-2);border:1px solid var(--border-2);color:var(--text-2);cursor:pointer;transition:all .2s}
+.ftab:hover{border-color:var(--neon-blue);color:var(--neon-blue)}
+.ftab.on{background:var(--grad);border-color:transparent;color:#000;box-shadow:0 0 16px rgba(0,245,255,.3)}
+.fcnt{width:17px;height:17px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;background:rgba(255,255,255,.2)}
+
+/* ── Category sections ─────────────────────────────── */
+.cat-sec{margin-bottom:46px}
+.cat-hd{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.cat-stripe{width:3px;height:24px;border-radius:99px;flex-shrink:0}
+.cat-name{font-family:var(--font-d);font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+.cat-rule{flex:1;height:1px;background:var(--border)}
+.cat-n{font-family:var(--font-m);font-size:10px;color:var(--text-3)}
+
+/* ── Tool card grid ────────────────────────────────── */
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:13px}
+.tc{background:var(--bg-1);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;transition:transform .3s cubic-bezier(.34,1.3,.64,1),border-color .25s,box-shadow .25s;display:flex;flex-direction:column}
+.tc:hover{transform:translateY(-5px) scale(1.01);border-color:var(--tc-a,var(--neon-blue));box-shadow:0 10px 36px rgba(0,0,0,.5),0 0 20px var(--tc-glow,rgba(0,245,255,.12))}
+.tc-art{height:112px;display:flex;align-items:center;justify-content:center;background:var(--bg-2);position:relative;overflow:hidden}
+.tc-art-bg{position:absolute;inset:0;opacity:.4;transition:opacity .3s}
+.tc:hover .tc-art-bg{opacity:.7}
+.tc-body{padding:13px 15px 15px;flex:1;display:flex;flex-direction:column;gap:4px}
+.tc-name{font-family:var(--font-d);font-size:11px;font-weight:700;line-height:1.3;letter-spacing:.2px}
+.tc-desc{font-size:11px;color:var(--text-3);line-height:1.5;flex:1}
+.tc-exts{font-family:var(--font-m);font-size:10px;margin-top:4px;opacity:.7}
+
+/* ── Conversion modal ──────────────────────────────── */
+.cv-modal{max-width:580px;padding:0;overflow:hidden;display:flex;flex-direction:column;max-height:92vh}
+.cv-head{display:flex;align-items:center;gap:14px;padding:20px 24px 16px;border-bottom:1px solid var(--border);flex-shrink:0}
+.cv-art{width:50px;height:50px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cv-info{flex:1;min-width:0}
+.cv-title{font-family:var(--font-d);font-size:15px;font-weight:800;letter-spacing:.5px}
+.cv-desc{font-size:12px;color:var(--text-2);margin-top:3px}
+.cv-x{background:none;border:none;color:var(--text-3);font-size:20px;cursor:pointer;padding:6px;border-radius:6px;transition:all .2s;flex-shrink:0;line-height:1}
+.cv-x:hover{color:var(--neon-pink);background:var(--neon-pink-dim)}
+.cv-body{padding:20px 24px;overflow-y:auto;flex:1}
+.cv-foot{padding:14px 24px;border-top:1px solid var(--border);display:flex;gap:10px;flex-shrink:0}
+.cv-foot .btn{flex:1;justify-content:center}
+.btn-cancel-sm{flex:0 0 auto!important;padding:11px 18px!important}
+
+/* ── Drop zones ────────────────────────────────────── */
+.dz{border:2px dashed var(--border-2);border-radius:var(--r-lg);padding:28px 20px;text-align:center;cursor:pointer;transition:all .25s;background:var(--bg-2);position:relative}
+.dz:hover,.dz.over{border-color:var(--neon-blue);background:rgba(0,245,255,.04);box-shadow:0 0 22px rgba(0,245,255,.08)}
+.dz input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.dz-ico{margin:0 auto 10px;display:flex;align-items:center;justify-content:center}
+.dz-title{font-weight:600;font-size:14px;margin-bottom:4px}
+.dz-hint{font-size:12px;color:var(--text-3)}
+
+/* ── File lists ────────────────────────────────────── */
+.flist{display:none;flex-direction:column;gap:6px;margin-top:12px}
+.flist.on{display:flex}
+.fi{display:flex;align-items:center;gap:10px;background:var(--bg-3);border:1px solid var(--border-2);border-radius:var(--r);padding:9px 12px}
+.fi-ic{font-size:20px;flex-shrink:0}
+.fi-inf{flex:1;min-width:0}
+.fi-name{font-weight:600;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fi-sz{font-size:11px;color:var(--text-3)}
+.fi-ord{font-family:var(--font-m);font-size:10px;color:var(--neon-blue);background:var(--neon-blue-dim);padding:2px 7px;border-radius:4px;flex-shrink:0;margin-left:auto}
+.fi-rm{background:none;border:none;color:var(--text-3);cursor:pointer;padding:3px 6px;border-radius:4px;font-size:13px;transition:all .2s;flex-shrink:0}
+.fi-rm:hover{color:var(--neon-pink);background:var(--neon-pink-dim)}
+.multi-tip{font-size:11px;color:var(--text-3);text-align:center;margin-top:6px;display:none}
+
+/* ── Options panel ─────────────────────────────────── */
+.opts{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px;margin-top:16px;display:none}
+.opts.on{display:block}
+.opts-hd{font-family:var(--font-d);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--neon-blue);margin-bottom:14px}
+.opt-row{margin-bottom:13px}
+.opt-row:last-child{margin-bottom:0}
+.opt-lbl{font-size:11px;font-weight:600;color:var(--text-2);letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
+.opt-lbl em{font-family:var(--font-m);font-style:normal;font-size:12px;color:var(--neon-blue);text-transform:none;letter-spacing:0}
+.opt-hint{font-size:10px;color:var(--text-3);margin-top:4px}
+select.opt-sel{width:100%;padding:9px 12px;background:var(--bg-3);border:1px solid var(--border-2);border-radius:var(--r);color:var(--text);font-size:13px;cursor:pointer;transition:border-color .2s;font-family:var(--font-b)}
+select.opt-sel:focus{border-color:var(--neon-blue);outline:none}
+.opt-rw{display:flex;align-items:center;gap:10px}
+input.opt-range{flex:1;-webkit-appearance:none;height:4px;border-radius:99px;background:var(--border-2);cursor:pointer;outline:none}
+input.opt-range::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--neon-blue);cursor:pointer;box-shadow:0 0 8px rgba(0,245,255,.5);border:2px solid var(--bg)}
+.rv{font-family:var(--font-m);font-size:13px;color:var(--neon-blue);min-width:34px;text-align:right}
+input.opt-num,input.opt-pw,input.opt-txt{width:100%;padding:9px 12px;background:var(--bg-3);border:1px solid var(--border-2);border-radius:var(--r);color:var(--text);font-size:13px;transition:border-color .2s;font-family:var(--font-b)}
+input.opt-num:focus,input.opt-pw:focus,input.opt-txt:focus{border-color:var(--neon-blue);outline:none}
+.opt-check{display:flex;align-items:center;gap:10px;cursor:pointer;padding:2px 0}
+.opt-check input{width:16px;height:16px;accent-color:var(--neon-blue);cursor:pointer;flex-shrink:0}
+.opt-check span{font-size:13px;color:var(--text-2);font-weight:500}
+.cond{display:none}
+.cond.on{display:block}
+
+/* ── Progress ──────────────────────────────────────── */
+.prog-wrap{display:none;flex-direction:column;gap:10px;margin-top:16px}
+.prog-wrap.on{display:flex}
+.prog-steps{display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:.4px;text-transform:uppercase}
+.pstep{display:flex;align-items:center;gap:5px;color:var(--text-3);transition:color .3s}
+.pstep-dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0;transition:box-shadow .3s}
+.pstep.act{color:var(--neon-blue)}
+.pstep.act .pstep-dot{box-shadow:0 0 8px var(--neon-blue);animation:pulse .9s ease-in-out infinite}
+.pstep.done{color:var(--neon-green)}
+.prog-sep{color:var(--border-2);font-size:14px;font-weight:300}
+.prog-lbl{font-size:12px;color:var(--text-2);text-align:center;letter-spacing:.3px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── Result panel ──────────────────────────────────── */
+.res{display:none;flex-direction:column;align-items:center;gap:12px;padding:24px 18px;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-lg);margin-top:14px;text-align:center}
+.res.on{display:flex}
+.res.ok{border-color:rgba(0,255,157,.3);box-shadow:0 0 24px rgba(0,255,157,.06)}
+.res.fail{border-color:rgba(255,45,120,.3);box-shadow:0 0 20px rgba(255,45,120,.05)}
+.res-ic{font-size:40px;line-height:1}
+.res-hd{font-family:var(--font-d);font-size:14px;font-weight:800;letter-spacing:.5px}
+.res-file{font-size:14px;font-weight:600;word-break:break-all;max-width:100%}
+.res-meta{font-size:12px;color:var(--text-2)}
+.res-email{font-size:12px;color:var(--neon-green)}
+.res-err{font-size:12px;color:var(--neon-pink);line-height:1.65;max-width:400px;word-break:break-word}
+.res-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+
+/* ── Auth gate ─────────────────────────────────────── */
+.auth-gate{background:var(--neon-purple-dim);border:1px solid rgba(180,78,255,.25);border-radius:var(--r);padding:14px 18px;font-size:13px;color:var(--neon-purple);margin-top:14px;text-align:center;display:none}
+.auth-gate a{color:var(--neon-blue);font-weight:700}
+
+/* ── Responsive ────────────────────────────────────── */
+@media(max-width:640px){
+  .hero{padding:32px 16px}
+  .tgrid{grid-template-columns:1fr 1fr}
+  .cv-modal{max-width:100%;border-radius:var(--r-xl) var(--r-xl) 0 0}
+  .modal-overlay{align-items:flex-end}
+}
+@media(max-width:380px){.tgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="toast-container"></div>
+<nav class="nav" id="nav"></nav>
+
+<!-- ── Page Hero ───────────────────────────────────── -->
+<div class="hero">
+  <div class="container">
+    <div class="hero-tag">// 26 professional tools</div>
+    <h1>Convert anything. <span class="grad-text">Instantly.</span></h1>
+    <p>PDF · Documents · Images · Video · Audio — FFmpeg, LibreOffice, Ghostscript &amp; Sharp</p>
+  </div>
+</div>
+
+<!-- ── Tool Grid ────────────────────────────────────── -->
+<section class="section" style="padding-top:28px">
+  <div class="container">
+    <div class="fbar" id="fbar">
+      <button class="ftab on" data-cat="all">All <span class="fcnt">26</span></button>
+      <button class="ftab" data-cat="pdf">PDF <span class="fcnt">6</span></button>
+      <button class="ftab" data-cat="documents">Docs <span class="fcnt">6</span></button>
+      <button class="ftab" data-cat="images">Images <span class="fcnt">6</span></button>
+      <button class="ftab" data-cat="video">Video <span class="fcnt">4</span></button>
+      <button class="ftab" data-cat="audio">Audio <span class="fcnt">4</span></button>
+    </div>
+    <div id="tools-root"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     CONVERSION MODAL
+     ══════════════════════════════════════════════════ -->
+<div class="modal-overlay hidden" id="cv-overlay">
+  <div class="modal cv-modal" id="cv-modal">
+
+    <!-- Header -->
+    <div class="cv-head">
+      <div class="cv-art" id="cv-art"></div>
+      <div class="cv-info">
+        <div class="cv-title" id="cv-title">Tool Name</div>
+        <div class="cv-desc"  id="cv-desc">Description</div>
+      </div>
+      <button class="cv-x" id="cv-x" aria-label="Close">✕</button>
+    </div>
+
+    <!-- Body -->
+    <div class="cv-body" id="cv-body">
+
+      <!-- Single-file drop zone -->
+      <div id="single-zone">
+        <div class="dz" id="dz1">
+          <input type="file" id="fi1" accept="*">
+          <div class="dz-ico">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+              <rect width="40" height="40" rx="10" fill="var(--bg-3)"/>
+              <path d="M20 26V14M14 20l6-6 6 6" stroke="var(--neon-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M11 30h18" stroke="var(--border-2)" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="dz-title">Drop your file here</div>
+          <div class="dz-hint" id="dz1-hint">or click to browse</div>
+        </div>
+        <div class="flist" id="fl1"></div>
+      </div>
+
+      <!-- Multi-file drop zone (merge-pdf only) -->
+      <div id="multi-zone" style="display:none">
+        <div class="dz" id="dz2" style="padding:22px 20px">
+          <input type="file" id="fi2" multiple accept=".pdf">
+          <div class="dz-ico">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+              <rect x="2" y="5" width="17" height="23" rx="3" fill="var(--bg-3)" stroke="var(--neon-blue)" stroke-width="1.5" opacity=".45"/>
+              <rect x="9" y="11" width="17" height="23" rx="3" fill="var(--bg-3)" stroke="var(--neon-blue)" stroke-width="1.5" opacity=".7"/>
+              <rect x="16" y="17" width="17" height="23" rx="3" fill="var(--bg-3)" stroke="var(--neon-blue)" stroke-width="1.5"/>
+              <path d="M24.5 26.5v-6M21.5 24l3-3 3 3" stroke="var(--neon-blue)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="dz-title">Drop 2 or more PDF files</div>
+          <div class="dz-hint">Files will be merged in the order shown below</div>
+        </div>
+        <div class="flist" id="fl2"></div>
+        <div class="multi-tip" id="multi-tip">Tap ✕ to remove a file · Drop more files to add them</div>
+      </div>
+
+      <!-- Options panel -->
+      <div class="opts" id="opts-panel">
+        <div class="opts-hd">⚙ Conversion Options</div>
+        <div id="opts-body"></div>
+      </div>
+
+      <!-- Progress indicator -->
+      <div class="prog-wrap" id="prog-wrap">
+        <div class="prog-steps">
+          <div class="pstep" id="ps1"><div class="pstep-dot"></div>Upload</div>
+          <div class="prog-sep">›</div>
+          <div class="pstep" id="ps2"><div class="pstep-dot"></div>Convert</div>
+          <div class="prog-sep">›</div>
+          <div class="pstep" id="ps3"><div class="pstep-dot"></div>Done</div>
+        </div>
+        <div class="progress-bar progress-indeterminate"><div class="progress-fill"></div></div>
+        <div class="prog-lbl" id="prog-lbl">Uploading…</div>
+      </div>
+
+      <!-- Result panel -->
+      <div class="res" id="res-panel">
+        <div class="res-ic"    id="res-ic"></div>
+        <div class="res-hd"    id="res-hd"></div>
+        <div class="res-file"  id="res-file"></div>
+        <div class="res-meta"  id="res-meta"></div>
+        <div class="res-email" id="res-email" style="display:none"></div>
+        <div class="res-err"   id="res-err"   style="display:none"></div>
+        <div class="res-btns"  id="res-btns"></div>
+      </div>
+
+      <!-- Auth gate (shown when not logged in) -->
+      <div class="auth-gate" id="auth-gate">
+        <a href="/login?next=/tools">Sign in</a> or <a href="/signup">create a free account</a> to convert files.
+      </div>
+
+    </div><!-- /cv-body -->
+
+    <!-- Footer -->
+    <div class="cv-foot" id="cv-foot">
+      <button class="btn btn-outline btn-cancel-sm" id="cv-cancel">Cancel</button>
+      <button class="btn btn-primary" id="cv-go" disabled>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M1 7h10M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Convert
+      </button>
+    </div>
+
+  </div><!-- /cv-modal -->
+</div><!-- /cv-overlay -->
+
+<!-- ══════════════════════════════════════════════════
+     SCRIPTS
+     ══════════════════════════════════════════════════ -->
+<script src="/js/app.js"></script>
+<script>
+'use strict';
+
+/* ── Category & Tool definitions ─────────────────────
+   These mirror backend/utils/tools.js exactly.
+   The `opts` array matches the `options` schema 1-to-1.
+   ──────────────────────────────────────────────────── */
+var CATS = [
+  { id: 'pdf',       label: 'PDF Tools',  col: '#00f5ff' },
+  { id: 'documents', label: 'Documents',  col: '#00ff9d' },
+  { id: 'images',    label: 'Images',     col: '#ffb800' },
+  { id: 'video',     label: 'Video',      col: '#b44eff' },
+  { id: 'audio',     label: 'Audio',      col: '#ff2d78' },
+];
+
+var TOOLS = [
+  /* ══ PDF ══════════════════════════════════════════════════════ */
+  { id: 'compress-pdf',  cat: 'pdf',      ac: '#00f5ff',
+    name: 'Compress PDF',    desc: 'Shrink PDF file size with quality presets',
+    exts: ['.pdf'],          multi: false,
+    opts: [
+      { k: 'quality', l: 'Quality preset', t: 'select', def: 'ebook',
+        ch: [{ v: 'screen',   lb: 'Screen — smallest (72 dpi)' },
+             { v: 'ebook',    lb: 'eBook — balanced (150 dpi)' },
+             { v: 'printer',  lb: 'Printer — high (300 dpi)'   },
+             { v: 'prepress', lb: 'Prepress — maximum quality' }] }
+    ]
+  },
+  { id: 'merge-pdf',     cat: 'pdf',      ac: '#00f5ff',
+    name: 'Merge PDFs',      desc: 'Combine 2 or more PDFs into one document',
+    exts: ['.pdf'],          multi: true,  minFiles: 2, opts: []
+  },
+  { id: 'split-pdf',     cat: 'pdf',      ac: '#00f5ff',
+    name: 'Split PDF',       desc: 'Extract specific pages into a new PDF',
+    exts: ['.pdf'],          multi: false,
+    opts: [
+      { k: 'pages', l: 'Pages to extract', t: 'text', def: '',
+        ph: 'e.g. 1-3, 5, 7-9  (blank = all pages)' }
+    ]
+  },
+  { id: 'pdf-to-word',   cat: 'pdf',      ac: '#00f5ff',
+    name: 'PDF → Word',      desc: 'Convert PDF to editable DOCX format',
+    exts: ['.pdf'],          multi: false, opts: []
+  },
+  { id: 'pdf-to-jpg',    cat: 'pdf',      ac: '#00f5ff',
+    name: 'PDF → JPG',       desc: 'Render PDF pages as high-quality JPG images',
+    exts: ['.pdf'],          multi: false,
+    opts: [
+      { k: 'density', l: 'Resolution (DPI)', t: 'select', def: '150',
+        ch: [{ v: '72',  lb: '72 dpi — screen / web'         },
+             { v: '96',  lb: '96 dpi — standard screen'      },
+             { v: '150', lb: '150 dpi — balanced (default)'  },
+             { v: '300', lb: '300 dpi — print quality'       }] },
+      { k: 'quality', l: 'JPEG quality', t: 'range', min: 50, max: 100, def: 90 }
+    ]
+  },
+  { id: 'protect-pdf',   cat: 'pdf',      ac: '#00f5ff',
+    name: 'Protect PDF',     desc: 'Add password protection with AES-128 encryption',
+    exts: ['.pdf'],          multi: false,
+    opts: [
+      { k: 'userPass',  l: 'User password (to open)',     t: 'password', def: '', ph: 'Required to open PDF'      },
+      { k: 'ownerPass', l: 'Owner password (to edit/print)', t: 'password', def: '', ph: 'Required to edit or print' }
+    ]
+  },
+
+  /* ══ DOCUMENTS ════════════════════════════════════════════════ */
+  { id: 'word-to-pdf',   cat: 'documents', ac: '#00ff9d',
+    name: 'Word → PDF',      desc: 'Convert DOCX/DOC files to PDF format',
+    exts: ['.docx', '.doc'], multi: false, opts: []
+  },
+  { id: 'excel-to-pdf',  cat: 'documents', ac: '#00ff9d',
+    name: 'Excel → PDF',     desc: 'Convert XLSX/XLS/CSV spreadsheets to PDF',
+    exts: ['.xlsx', '.xls', '.csv'], multi: false, opts: []
+  },
+  { id: 'ppt-to-pdf',    cat: 'documents', ac: '#00ff9d',
+    name: 'PowerPoint → PDF', desc: 'Convert PPTX/PPT presentations to PDF',
+    exts: ['.pptx', '.ppt'], multi: false, opts: []
+  },
+  { id: 'html-to-pdf',   cat: 'documents', ac: '#00ff9d',
+    name: 'HTML → PDF',      desc: 'Convert HTML files to PDF documents',
+    exts: ['.html', '.htm'], multi: false, opts: []
+  },
+  { id: 'txt-to-pdf',    cat: 'documents', ac: '#00ff9d',
+    name: 'Text → PDF',      desc: 'Convert plain text files to PDF format',
+    exts: ['.txt'],          multi: false, opts: []
+  },
+  { id: 'csv-to-xlsx',   cat: 'documents', ac: '#00ff9d',
+    name: 'CSV → Excel',     desc: 'Convert CSV data to Excel spreadsheet',
+    exts: ['.csv'],          multi: false, opts: []
+  },
+
+  /* ══ IMAGES ═══════════════════════════════════════════════════ */
+  { id: 'compress-image', cat: 'images',   ac: '#ffb800',
+    name: 'Compress Image',  desc: 'Reduce image file size, control JPEG quality',
+    exts: ['.jpg', '.jpeg', '.png', '.webp'], multi: false,
+    opts: [
+      { k: 'quality', l: 'JPEG quality', t: 'range', min: 10, max: 95, def: 75,
+        hint: 'Lower = smaller file. 75 is a good balance.' }
+    ]
+  },
+  { id: 'resize-image',  cat: 'images',   ac: '#ffb800',
+    name: 'Resize Image',    desc: 'Resize by pixel dimensions or percentage scale',
+    exts: ['.jpg', '.jpeg', '.png', '.webp', '.gif'], multi: false,
+    opts: [
+      { k: 'resizeMode', l: 'Resize method', t: 'select', def: 'pixels',
+        ch: [{ v: 'pixels',  lb: 'By width × height (pixels)'  },
+             { v: 'percent', lb: 'By percentage scale (%)'      }] },
+      { k: 'width',   l: 'Width (px)',              t: 'number', def: '', ph: '800',  min: 1, max: 8000, cond: 'resizeMode=pixels'  },
+      { k: 'height',  l: 'Height (px, optional)',   t: 'number', def: '', ph: 'auto', min: 1, max: 8000, cond: 'resizeMode=pixels'  },
+      { k: 'percent', l: 'Scale (%)',               t: 'range',  min: 5, max: 200, def: 50,              cond: 'resizeMode=percent' },
+      { k: 'quality', l: 'Output quality',          t: 'range',  min: 50, max: 100, def: 85 }
+    ]
+  },
+  { id: 'png-to-jpg',    cat: 'images',   ac: '#ffb800',
+    name: 'PNG → JPG',       desc: 'Convert PNG images to JPG with quality control',
+    exts: ['.png'],          multi: false,
+    opts: [{ k: 'quality', l: 'JPEG quality', t: 'range', min: 50, max: 100, def: 90 }]
+  },
+  { id: 'jpg-to-png',    cat: 'images',   ac: '#ffb800',
+    name: 'JPG → PNG',       desc: 'Convert JPG to lossless PNG format',
+    exts: ['.jpg', '.jpeg'], multi: false,
+    opts: [{ k: 'compressionLevel', l: 'PNG compression (1=fast · 9=smallest)', t: 'range', min: 1, max: 9, def: 6 }]
+  },
+  { id: 'jpg-to-webp',   cat: 'images',   ac: '#ffb800',
+    name: 'Image → WebP',    desc: 'Convert JPG/PNG to modern WebP format',
+    exts: ['.jpg', '.jpeg', '.png'], multi: false,
+    opts: [
+      { k: 'quality',  l: 'WebP quality', t: 'range',    min: 50, max: 100, def: 82 },
+      { k: 'lossless', l: 'Lossless mode (pixel-perfect, larger file)', t: 'checkbox', def: false }
+    ]
+  },
+  { id: 'jpg-to-pdf',    cat: 'images',   ac: '#ffb800',
+    name: 'Image → PDF',     desc: 'Convert JPG/PNG images to PDF document',
+    exts: ['.jpg', '.jpeg', '.png'], multi: false,
+    opts: [{ k: 'quality', l: 'JPEG quality in PDF', t: 'range', min: 50, max: 100, def: 90 }]
+  },
+
+  /* ══ VIDEO ════════════════════════════════════════════════════ */
+  { id: 'mp4-to-mp3',    cat: 'video',    ac: '#b44eff',
+    name: 'Video → MP3',     desc: 'Extract audio track from any video as MP3',
+    exts: ['.mp4', '.mkv', '.avi', '.mov', '.webm', '.flv'], multi: false,
+    opts: [
+      { k: 'audioBitrate', l: 'MP3 bitrate', t: 'select', def: '192k',
+        ch: [{ v: '96k',  lb: '96 kbps — small file'    },
+             { v: '128k', lb: '128 kbps — standard'      },
+             { v: '192k', lb: '192 kbps — high quality'  },
+             { v: '320k', lb: '320 kbps — maximum'        }] }
+    ]
+  },
+  { id: 'mp4-to-webm',   cat: 'video',    ac: '#b44eff',
+    name: 'MP4 → WebM',      desc: 'Convert MP4 to WebM for browser-native playback',
+    exts: ['.mp4', '.avi', '.mov', '.mkv'], multi: false,
+    opts: [
+      { k: 'crf', l: 'Quality (CRF — lower = better)', t: 'range', min: 18, max: 52, def: 33,
+        hint: 'CRF 33 is balanced. Lower = larger file but better quality.' }
+    ]
+  },
+  { id: 'avi-to-mp4',    cat: 'video',    ac: '#b44eff',
+    name: 'Video → MP4',     desc: 'Convert AVI/MOV/MKV/FLV to modern H.264 MP4',
+    exts: ['.avi', '.mov', '.mkv', '.flv', '.wmv', '.m4v'], multi: false,
+    opts: [
+      { k: 'crf', l: 'Quality (CRF)', t: 'range', min: 16, max: 36, def: 22,
+        hint: 'CRF 22 is a good default. Lower = better quality, larger file.' },
+      { k: 'preset', l: 'Encoding speed', t: 'select', def: 'fast',
+        ch: [{ v: 'ultrafast', lb: 'Ultrafast — lower quality' },
+             { v: 'fast',      lb: 'Fast — recommended'         },
+             { v: 'medium',    lb: 'Medium — balanced'          },
+             { v: 'slow',      lb: 'Slow — best quality'        }] }
+    ]
+  },
+  { id: 'compress-video', cat: 'video',   ac: '#b44eff',
+    name: 'Compress Video',  desc: 'Reduce video file size using H.264 re-encoding',
+    exts: ['.mp4', '.avi', '.mov', '.mkv', '.webm'], multi: false,
+    opts: [
+      { k: 'crf', l: 'Compression level (CRF)', t: 'range', min: 18, max: 40, def: 28,
+        hint: 'Higher CRF = smaller file, lower quality. 28 is a good starting point.' },
+      { k: 'audioBitrate', l: 'Audio bitrate', t: 'select', def: '128k',
+        ch: [{ v: '64k',  lb: '64 kbps — small'    },
+             { v: '96k',  lb: '96 kbps'              },
+             { v: '128k', lb: '128 kbps — standard'  },
+             { v: '192k', lb: '192 kbps — high'       }] }
+    ]
+  },
+
+  /* ══ AUDIO ════════════════════════════════════════════════════ */
+  { id: 'mp3-to-wav',    cat: 'audio',    ac: '#ff2d78',
+    name: 'Audio → WAV',     desc: 'Convert MP3/OGG/FLAC/AAC to uncompressed WAV',
+    exts: ['.mp3', '.ogg', '.flac', '.aac', '.m4a'], multi: false,
+    opts: [
+      { k: 'sampleRate', l: 'Sample rate', t: 'select', def: '44100',
+        ch: [{ v: '22050', lb: '22.05 kHz — small file'         },
+             { v: '44100', lb: '44.1 kHz — CD quality (default)'},
+             { v: '48000', lb: '48 kHz — professional / video'  }] }
+    ]
+  },
+  { id: 'wav-to-mp3',    cat: 'audio',    ac: '#ff2d78',
+    name: 'WAV → MP3',       desc: 'Convert WAV/FLAC/AIFF audio to compressed MP3',
+    exts: ['.wav', '.flac', '.aiff', '.ogg', '.aac'], multi: false,
+    opts: [
+      { k: 'audioBitrate', l: 'MP3 bitrate', t: 'select', def: '192k',
+        ch: [{ v: '96k',  lb: '96 kbps — small'     },
+             { v: '128k', lb: '128 kbps — standard'  },
+             { v: '192k', lb: '192 kbps — high'      },
+             { v: '320k', lb: '320 kbps — maximum'   }] }
+    ]
+  },
+  { id: 'flac-to-mp3',   cat: 'audio',    ac: '#ff2d78',
+    name: 'FLAC → MP3',      desc: 'Convert lossless FLAC audio to MP3',
+    exts: ['.flac'],         multi: false,
+    opts: [
+      { k: 'audioBitrate', l: 'MP3 bitrate', t: 'select', def: '320k',
+        ch: [{ v: '128k', lb: '128 kbps — standard'  },
+             { v: '192k', lb: '192 kbps — high'      },
+             { v: '256k', lb: '256 kbps — very high' },
+             { v: '320k', lb: '320 kbps — maximum'   }] }
+    ]
+  },
+  { id: 'compress-audio', cat: 'audio',   ac: '#ff2d78',
+    name: 'Compress Audio',  desc: 'Reduce audio file size with smart bitrate reduction',
+    exts: ['.mp3', '.wav', '.flac', '.aac', '.ogg', '.m4a'], multi: false,
+    opts: [
+      { k: 'audioBitrate', l: 'Target bitrate', t: 'select', def: '96k',
+        ch: [{ v: '48k',  lb: '48 kbps — maximum compression' },
+             { v: '64k',  lb: '64 kbps — voice quality'        },
+             { v: '96k',  lb: '96 kbps — balanced (default)'   },
+             { v: '128k', lb: '128 kbps — good quality'        }] }
+    ]
+  },
+];
+
+/* ── File icon map ────────────────────────────────── */
+var IMAP = {
+  pdf:'📄', doc:'📝', docx:'📝', xls:'📊', xlsx:'📊', csv:'📊',
+  pptx:'📊', ppt:'📊', html:'🌐', htm:'🌐', txt:'📃',
+  jpg:'🖼', jpeg:'🖼', png:'🖼', webp:'🖼', gif:'🖼',
+  mp4:'🎬', avi:'🎬', mov:'🎬', mkv:'🎬', webm:'🎬', flv:'🎬', wmv:'🎬', m4v:'🎬',
+  mp3:'🎵', wav:'🎵', flac:'🎵', ogg:'🎵', aac:'🎵', m4a:'🎵', aiff:'🎵',
+};
+function fIcon(name) {
+  var ext = (name || '').split('.').pop().toLowerCase();
+  return IMAP[ext] || '📁';
+}
+
+/* ── SVG art per category ─────────────────────────── */
+function catSvg(cat, ac) {
+  var c = ac, d = ac + '14';
+  var m = {
+    pdf:       '<svg width="64" height="64" viewBox="0 0 64 64" fill="none"><rect x="10" y="4" width="28" height="38" rx="4" fill="#0f0f18" stroke="'+c+'" stroke-width="1.5" opacity=".5"/><path d="M28 4v12h10" stroke="'+c+'" stroke-width="1.5" opacity=".4"/><rect x="14" y="22" width="14" height="2.5" rx="1.25" fill="'+c+'" opacity=".5"/><rect x="14" y="28" width="18" height="2.5" rx="1.25" fill="'+c+'" opacity=".35"/><circle cx="48" cy="48" r="12" fill="'+d+'" stroke="'+c+'" stroke-width="1.2"/><path d="M44 52l4-8 4 8" stroke="'+c+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    documents: '<svg width="64" height="64" viewBox="0 0 64 64" fill="none"><rect x="6" y="8" width="24" height="34" rx="3" fill="#0f0f18" stroke="'+c+'" stroke-width="1.5" opacity=".5"/><rect x="24" y="18" width="24" height="30" rx="3" fill="'+d+'" stroke="'+c+'" stroke-width="1.5"/><rect x="10" y="18" width="12" height="2" rx="1" fill="'+c+'" opacity=".5"/><rect x="10" y="24" width="16" height="2" rx="1" fill="'+c+'" opacity=".35"/><rect x="28" y="28" width="14" height="2" rx="1" fill="'+c+'" opacity=".5"/><rect x="28" y="34" width="10" height="2" rx="1" fill="'+c+'" opacity=".35"/></svg>',
+    images:    '<svg width="64" height="64" viewBox="0 0 64 64" fill="none"><rect x="4" y="10" width="40" height="32" rx="5" fill="#0f0f18" stroke="'+c+'" stroke-width="1.5" opacity=".5"/><circle cx="14" cy="20" r="5" fill="'+c+'" opacity=".45"/><path d="M4 32l12-10 10 8 10-7 18 13H4z" fill="'+c+'" opacity=".3"/><rect x="38" y="34" width="20" height="18" rx="4" fill="'+d+'" stroke="'+c+'" stroke-width="1.2"/></svg>',
+    video:     '<svg width="64" height="64" viewBox="0 0 64 64" fill="none"><rect x="2" y="12" width="40" height="30" rx="5" fill="#0f0f18" stroke="'+c+'" stroke-width="1.5" opacity=".5"/><polygon points="14,18 14,36 30,27" fill="'+c+'" opacity=".7"/><path d="M42 18l18-7v34l-18-7V18z" fill="'+d+'" stroke="'+c+'" stroke-width="1.2"/></svg>',
+    audio:     '<svg width="64" height="64" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" fill="#0a0a10" stroke="'+c+'" stroke-width="1.5" opacity=".4"/><path d="M16 32v-7M22 32v-13M28 32v-17M34 32v-19M40 32v-17M46 32v-13M52 32v-7" stroke="'+c+'" stroke-width="2.5" stroke-linecap="round"/></svg>',
+  };
+  return m[cat] || m.pdf;
+}
+
+/* ═══════════════════════════════════════════════════
+   RENDER TOOL GRID
+   ═══════════════════════════════════════════════════ */
+renderNav('tools');
+var activeCat = new URLSearchParams(location.search).get('cat') || 'all';
+
+// Set initial active tab
+document.querySelectorAll('.ftab').forEach(function(t) {
+  if (t.dataset.cat === activeCat) t.classList.add('on');
+  else t.classList.remove('on');
+});
+
+function renderGrid() {
+  var root = document.getElementById('tools-root');
+  root.innerHTML = '';
+  var catsToShow = activeCat === 'all'
+    ? CATS
+    : CATS.filter(function(c) { return c.id === activeCat; });
+
+  catsToShow.forEach(function(cat) {
+    var tools = TOOLS.filter(function(t) { return t.cat === cat.id; });
+    var sec = document.createElement('div');
+    sec.className = 'cat-sec';
+    sec.innerHTML =
+      '<div class="cat-hd">' +
+        '<div class="cat-stripe" style="background:' + cat.col + ';box-shadow:0 0 8px ' + cat.col + '88"></div>' +
+        '<div class="cat-name" style="color:' + cat.col + '">' + cat.label + '</div>' +
+        '<div class="cat-rule"></div>' +
+        '<div class="cat-n">' + tools.length + ' tools</div>' +
+      '</div>' +
+      '<div class="tgrid" id="tg-' + cat.id + '"></div>';
+    root.appendChild(sec);
+
+    var grid = sec.querySelector('#tg-' + cat.id);
+    tools.forEach(function(tool) {
+      var card = document.createElement('div');
+      card.className = 'tc';
+      card.style.cssText = '--tc-a:' + tool.ac + ';--tc-glow:' + tool.ac + '22';
+      card.innerHTML =
+        '<div class="tc-art">' +
+          '<div class="tc-art-bg" style="background:radial-gradient(circle at 60% 40%,' + tool.ac + '28,transparent 70%)"></div>' +
+          catSvg(tool.cat, tool.ac) +
+        '</div>' +
+        '<div class="tc-body">' +
+          '<div class="tc-name" style="color:' + tool.ac + '">' + tool.name + '</div>' +
+          '<div class="tc-desc">' + tool.desc + '</div>' +
+          '<div class="tc-exts" style="color:' + tool.ac + '">' + tool.exts.slice(0, 3).join(' · ') + '</div>' +
+        '</div>';
+      card.addEventListener('click', function() { openModal(tool); });
+      grid.appendChild(card);
+    });
+  });
+}
+
+document.getElementById('fbar').addEventListener('click', function(e) {
+  var t = e.target.closest('.ftab');
+  if (!t) return;
+  activeCat = t.dataset.cat;
+  document.querySelectorAll('.ftab').forEach(function(x) { x.classList.remove('on'); });
+  t.classList.add('on');
+  renderGrid();
+});
+
+renderGrid();
+
+/* ═══════════════════════════════════════════════════
+   OPTIONS PANEL BUILDER
+   Builds dynamic form controls from tool.opts schema,
+   matching backend/utils/tools.js options exactly.
+   ═══════════════════════════════════════════════════ */
+function buildOpts(tool) {
+  var panel = document.getElementById('opts-panel');
+  var body  = document.getElementById('opts-body');
+  body.innerHTML = '';
+
+  if (!tool.opts || tool.opts.length === 0) {
+    panel.classList.remove('on');
+    return;
+  }
+  panel.classList.add('on');
+
+  tool.opts.forEach(function(o) {
+    var wrap = document.createElement('div');
+    wrap.className = 'opt-row' + (o.cond ? ' cond' : '');
+    wrap.id = 'orow-' + o.k;
+
+    if (o.t === 'select') {
+      var optHtml = o.ch.map(function(c) {
+        return '<option value="' + c.v + '"' + (c.v === o.def ? ' selected' : '') + '>' + c.lb + '</option>';
+      }).join('');
+      wrap.innerHTML =
+        '<div class="opt-lbl">' + o.l + '</div>' +
+        '<select class="opt-sel" data-key="' + o.k + '" id="ov-' + o.k + '">' + optHtml + '</select>';
+
+    } else if (o.t === 'range') {
+      wrap.innerHTML =
+        '<div class="opt-lbl">' + o.l + ' <em id="rv-' + o.k + '">' + o.def + '</em></div>' +
+        '<div class="opt-rw">' +
+          '<input type="range" class="opt-range" data-key="' + o.k + '" id="ov-' + o.k + '" min="' + o.min + '" max="' + o.max + '" value="' + o.def + '">' +
+        '</div>' +
+        (o.hint ? '<div class="opt-hint">' + o.hint + '</div>' : '');
+
+    } else if (o.t === 'number') {
+      wrap.innerHTML =
+        '<div class="opt-lbl">' + o.l + '</div>' +
+        '<input type="number" class="opt-num" data-key="' + o.k + '" id="ov-' + o.k + '"' +
+          ' placeholder="' + (o.ph || '') + '"' +
+          ' min="' + (o.min || 1) + '" max="' + (o.max || 9999) + '"' +
+          ' value="' + (o.def || '') + '">';
+
+    } else if (o.t === 'text') {
+      wrap.innerHTML =
+        '<div class="opt-lbl">' + o.l + '</div>' +
+        '<input type="text" class="opt-txt" data-key="' + o.k + '" id="ov-' + o.k + '"' +
+          ' placeholder="' + (o.ph || '') + '" value="' + (o.def || '') + '">';
+
+    } else if (o.t === 'password') {
+      wrap.innerHTML =
+        '<div class="opt-lbl">' + o.l + '</div>' +
+        '<input type="password" class="opt-pw" data-key="' + o.k + '" id="ov-' + o.k + '"' +
+          ' placeholder="' + (o.ph || '') + '" autocomplete="off">';
+
+    } else if (o.t === 'checkbox') {
+      wrap.innerHTML =
+        '<label class="opt-check">' +
+          '<input type="checkbox" data-key="' + o.k + '" id="ov-' + o.k + '"' + (o.def ? ' checked' : '') + '>' +
+          '<span>' + o.l + '</span>' +
+        '</label>';
+    }
+
+    body.appendChild(wrap);
+  });
+
+  // Wire live range displays
+  body.querySelectorAll('input.opt-range').forEach(function(r) {
+    var disp = document.getElementById('rv-' + r.dataset.key);
+    if (disp) {
+      r.addEventListener('input', function() { disp.textContent = this.value; });
+    }
+  });
+
+  // Wire conditional field visibility (cond: 'key=value')
+  tool.opts.forEach(function(o) {
+    if (!o.cond) return;
+    var parts  = o.cond.split('=');
+    var ctlId  = 'ov-' + parts[0];
+    var ctlVal = parts[1];
+    var ctl    = document.getElementById(ctlId);
+    var row    = document.getElementById('orow-' + o.k);
+    if (!ctl || !row) return;
+
+    function update() {
+      row.classList.toggle('on', ctl.value === ctlVal);
+    }
+    ctl.addEventListener('change', update);
+    update(); // run once on open
+  });
+}
+
+function collectOpts(tool) {
+  var result = {};
+  if (!tool.opts) return result;
+  tool.opts.forEach(function(o) {
+    var el = document.getElementById('ov-' + o.k);
+    if (!el) return;
+    if (o.t === 'checkbox') {
+      result[o.k] = el.checked;
+    } else if (o.t === 'range') {
+      result[o.k] = parseInt(el.value, 10);
+    } else if (o.t === 'number') {
+      result[o.k] = el.value === '' ? undefined : el.value;
+    } else {
+      result[o.k] = el.value;
+    }
+  });
+  return result;
+}
+
+/* ═══════════════════════════════════════════════════
+   FILE MANAGEMENT
+   ═══════════════════════════════════════════════════ */
+var selFiles  = [];   // currently selected File objects
+var curTool   = null; // active tool definition
+
+function renderSingleFile(f) {
+  var list = document.getElementById('fl1');
+  if (!f) { list.classList.remove('on'); list.innerHTML = ''; return; }
+  list.classList.add('on');
+  list.innerHTML =
+    '<div class="fi">' +
+      '<div class="fi-ic">' + fIcon(f.name) + '</div>' +
+      '<div class="fi-inf">' +
+        '<div class="fi-name">' + f.name + '</div>' +
+        '<div class="fi-sz">'  + formatBytes(f.size) + '</div>' +
+      '</div>' +
+      '<button class="fi-rm" id="rm-single">✕</button>' +
+    '</div>';
+  document.getElementById('rm-single').addEventListener('click', function() {
+    selFiles = [];
+    renderSingleFile(null);
+    document.getElementById('fi1').value = '';
+    updateGoBtn();
+  });
+}
+
+function renderMultiFiles() {
+  var list = document.getElementById('fl2');
+  var tip  = document.getElementById('multi-tip');
+  if (!selFiles.length) {
+    list.classList.remove('on');
+    list.innerHTML = '';
+    tip.style.display = 'none';
+    return;
+  }
+  list.classList.add('on');
+  tip.style.display = 'block';
+  list.innerHTML = selFiles.map(function(f, i) {
+    return '<div class="fi">' +
+      '<div class="fi-ic">' + fIcon(f.name) + '</div>' +
+      '<div class="fi-inf">' +
+        '<div class="fi-name">' + f.name + '</div>' +
+        '<div class="fi-sz">'  + formatBytes(f.size) + '</div>' +
+      '</div>' +
+      '<span class="fi-ord">' + (i + 1) + '</span>' +
+      '<button class="fi-rm" data-idx="' + i + '">✕</button>' +
+    '</div>';
+  }).join('');
+  list.querySelectorAll('.fi-rm').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      selFiles.splice(parseInt(this.dataset.idx, 10), 1);
+      renderMultiFiles();
+      updateGoBtn();
+    });
+  });
+}
+
+function updateGoBtn() {
+  var ok = curTool && (
+    curTool.multi
+      ? selFiles.length >= (curTool.minFiles || 2)
+      : selFiles.length === 1
+  );
+  document.getElementById('cv-go').disabled = !ok;
+}
+
+/* ── File inputs ──────────────────────────────────── */
+document.getElementById('fi1').addEventListener('change', function(e) {
+  var f = e.target.files[0];
+  if (!f) return;
+  selFiles = [f];
+  renderSingleFile(f);
+  updateGoBtn();
+});
+
+document.getElementById('fi2').addEventListener('change', function(e) {
+  var newFiles = Array.from(e.target.files);
+  if (!newFiles.length) return;
+  selFiles = selFiles.concat(newFiles);
+  renderMultiFiles();
+  updateGoBtn();
+  e.target.value = ''; // allow re-adding same file
+});
+
+/* ── Drag-drop single ─────────────────────────────── */
+var dz1 = document.getElementById('dz1');
+['dragover', 'dragleave', 'drop'].forEach(function(ev) {
+  dz1.addEventListener(ev, function(e) {
+    if (ev === 'dragover') { e.preventDefault(); dz1.classList.add('over'); }
+    else if (ev === 'dragleave') { dz1.classList.remove('over'); }
+    else {
+      e.preventDefault();
+      dz1.classList.remove('over');
+      var f = e.dataTransfer.files[0];
+      if (f) { selFiles = [f]; renderSingleFile(f); updateGoBtn(); }
+    }
+  });
+});
+
+/* ── Drag-drop multi ──────────────────────────────── */
+var dz2 = document.getElementById('dz2');
+['dragover', 'dragleave', 'drop'].forEach(function(ev) {
+  dz2.addEventListener(ev, function(e) {
+    if (ev === 'dragover') { e.preventDefault(); dz2.classList.add('over'); }
+    else if (ev === 'dragleave') { dz2.classList.remove('over'); }
+    else {
+      e.preventDefault();
+      dz2.classList.remove('over');
+      var pdfs = Array.from(e.dataTransfer.files)
+        .filter(function(f) { return f.name.toLowerCase().endsWith('.pdf'); });
+      if (pdfs.length) {
+        selFiles = selFiles.concat(pdfs);
+        renderMultiFiles();
+        updateGoBtn();
+      } else {
+        Toast.error('Please drop PDF files only for this tool.');
+      }
+    }
+  });
+});
+
+/* ═══════════════════════════════════════════════════
+   MODAL OPEN / CLOSE / STATE
+   ═══════════════════════════════════════════════════ */
+function openModal(tool) {
+  curTool  = tool;
+  selFiles = [];
+
+  // Populate header
+  var artEl = document.getElementById('cv-art');
+  artEl.innerHTML = catSvg(tool.cat, tool.ac);
+  artEl.style.background = tool.ac + '1a';
+  document.getElementById('cv-title').textContent = tool.name;
+  document.getElementById('cv-desc').textContent  = tool.desc;
+
+  // Show correct drop zone
+  document.getElementById('single-zone').style.display = tool.multi ? 'none' : 'block';
+  document.getElementById('multi-zone').style.display  = tool.multi ? 'block' : 'none';
+
+  // Set accepted file types & hint
+  document.getElementById('fi1').accept  = tool.exts.join(',');
+  document.getElementById('dz1-hint').textContent = 'Accepts: ' + tool.exts.join(', ');
+
+  // Clear file lists
+  renderSingleFile(null);
+  selFiles = [];
+  renderMultiFiles();
+
+  // Build options
+  buildOpts(tool);
+
+  // Reset to upload state
+  showUploadState();
+  updateGoBtn();
+
+  // Open overlay
+  document.getElementById('cv-overlay').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('cv-overlay').classList.add('hidden');
+  document.body.style.overflow = '';
+  curTool  = null;
+  selFiles = [];
+}
+
+function showUploadState() {
+  // Reset all UI back to upload mode
+  document.getElementById('prog-wrap').classList.remove('on');
+  document.getElementById('res-panel').className = 'res';
+  document.getElementById('auth-gate').style.display = 'none';
+  document.getElementById('cv-foot').style.display = 'flex';
+
+  if (curTool) {
+    document.getElementById('single-zone').style.display = curTool.multi ? 'none'  : 'block';
+    document.getElementById('multi-zone').style.display  = curTool.multi ? 'block' : 'none';
+    var hasOpts = curTool.opts && curTool.opts.length > 0;
+    document.getElementById('opts-panel').classList.toggle('on', hasOpts);
+  }
+}
+
+function setStep(which) {
+  var s1 = document.getElementById('ps1');
+  var s2 = document.getElementById('ps2');
+  var s3 = document.getElementById('ps3');
+  s1.className = 'pstep'; s2.className = 'pstep'; s3.className = 'pstep';
+  if (which === 'upload')  { s1.className = 'pstep act'; }
+  if (which === 'convert') { s1.className = 'pstep done'; s2.className = 'pstep act'; }
+  if (which === 'done')    { s1.className = 'pstep done'; s2.className = 'pstep done'; s3.className = 'pstep done'; }
+}
+
+function showResult(data) {
+  document.getElementById('prog-wrap').classList.remove('on');
+  document.getElementById('cv-foot').style.display = 'none';
+
+  var panel = document.getElementById('res-panel');
+
+  if (data.status === 'done') {
+    panel.className = 'res on ok';
+    document.getElementById('res-ic').textContent   = '✅';
+    document.getElementById('res-hd').textContent   = 'Conversion complete!';
+    document.getElementById('res-file').textContent = data.outputName || '';
+    document.getElementById('res-meta').textContent =
+      formatBytes(data.outputSize) + (data.duration ? '  ·  ' + data.duration + 'ms' : '');
+    document.getElementById('res-err').style.display = 'none';
+
+    var emailEl = document.getElementById('res-email');
+    if (data.emailSent) {
+      emailEl.textContent    = '📧 File also sent to your email';
+      emailEl.style.display  = 'block';
+    } else {
+      emailEl.style.display  = 'none';
+    }
+
+    document.getElementById('res-btns').innerHTML =
+      '<a class="btn btn-primary" href="/api/download/' + data.downloadToken + '"' +
+          ' download="' + data.outputName + '" target="_blank">' +
+        '<svg width="14" height="14" viewBox="0 0 14 14" fill="none">' +
+          '<path d="M7 1v8M4 7l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+          '<path d="M1 11h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>' +
+        '</svg> Download file' +
+      '</a>' +
+      '<button class="btn btn-outline" id="btn-again">Convert another</button>';
+
+    document.getElementById('btn-again').addEventListener('click', function() {
+      selFiles = [];
+      renderSingleFile(null);
+      renderMultiFiles();
+      buildOpts(curTool);
+      showUploadState();
+      updateGoBtn();
+    });
+
+    Toast.success('✓ ' + (data.outputName || 'File') + ' is ready!');
+
+  } else {
+    panel.className = 'res on fail';
+    document.getElementById('res-ic').textContent   = '❌';
+    document.getElementById('res-hd').textContent   = 'Conversion failed';
+    document.getElementById('res-file').textContent = '';
+    document.getElementById('res-meta').textContent = '';
+    document.getElementById('res-email').style.display = 'none';
+
+    var errEl = document.getElementById('res-err');
+    errEl.textContent   = data.errorMessage
+      || 'Conversion engine error. Check that FFmpeg / LibreOffice / Ghostscript is installed on the server.';
+    errEl.style.display = 'block';
+
+    document.getElementById('res-btns').innerHTML =
+      '<button class="btn btn-outline" id="btn-retry">Try again</button>';
+    document.getElementById('btn-retry').addEventListener('click', function() {
+      selFiles = [];
+      renderSingleFile(null);
+      renderMultiFiles();
+      showUploadState();
+      updateGoBtn();
+    });
+
+    Toast.error('Conversion failed: ' + ((data.errorMessage || '').slice(0, 80) || 'unknown error'));
+  }
+}
+
+/* ── Close handlers ───────────────────────────────── */
+document.getElementById('cv-x').addEventListener('click', closeModal);
+document.getElementById('cv-cancel').addEventListener('click', closeModal);
+document.getElementById('cv-overlay').addEventListener('click', function(e) {
+  if (e.target === document.getElementById('cv-overlay')) closeModal();
+});
+
+/* ═══════════════════════════════════════════════════
+   CONVERT BUTTON — main upload + poll pipeline
+   ═══════════════════════════════════════════════════ */
+document.getElementById('cv-go').addEventListener('click', async function() {
+  if (!curTool || !selFiles.length) return;
+
+  // Not logged in — show auth gate
+  if (!Auth.isLoggedIn()) {
+    document.getElementById('cv-foot').style.display   = 'none';
+    document.getElementById('single-zone').style.display = 'none';
+    document.getElementById('multi-zone').style.display  = 'none';
+    document.getElementById('opts-panel').classList.remove('on');
+    document.getElementById('auth-gate').style.display = 'block';
+    return;
+  }
+
+  var opts = collectOpts(curTool);
+
+  // Switch to progress UI
+  document.getElementById('single-zone').style.display = 'none';
+  document.getElementById('multi-zone').style.display  = 'none';
+  document.getElementById('opts-panel').classList.remove('on');
+  document.getElementById('cv-foot').style.display     = 'none';
+  document.getElementById('prog-wrap').classList.add('on');
+  setStep('upload');
+  document.getElementById('prog-lbl').textContent =
+    'Uploading ' + selFiles.length + ' file' + (selFiles.length > 1 ? 's' : '') + '…';
+
+  try {
+    // Build FormData — use upload.any() on server so field name is 'file' for all
+    var fd = new FormData();
+    fd.append('toolId', curTool.id);
+    fd.append('options', JSON.stringify(opts));
+
+    if (curTool.multi) {
+      // Append each file under the same field name 'file'
+      selFiles.forEach(function(f) { fd.append('file', f, f.name); });
+    } else {
+      fd.append('file', selFiles[0], selFiles[0].name);
+    }
+
+    var fetchRes = await fetch('/api/convert', {
+      method:  'POST',
+      headers: { 'Authorization': 'Bearer ' + Auth.getToken() },
+      body:    fd,
+    });
+    var data = await fetchRes.json();
+    if (!fetchRes.ok) throw new Error(data.error || 'Upload failed (HTTP ' + fetchRes.status + ')');
+
+    // Start polling
+    setStep('convert');
+    document.getElementById('prog-lbl').textContent = 'Converting with ' + curTool.name + '…';
+
+    var result = await pollConversion(data.conversionId, function(s) {
+      if (s.status === 'processing') {
+        document.getElementById('prog-lbl').textContent = 'Converting… almost done ⚡';
+      }
+    }, 1500);
+
+    setStep('done');
+    showResult(result);
+
+  } catch (err) {
+    // Reset to upload state on network / parse error
+    document.getElementById('prog-wrap').classList.remove('on');
+    showUploadState();
+    updateGoBtn();
+    Toast.error(err.message || 'Request failed');
+  }
+});
+</script>
+</body>
+</html>

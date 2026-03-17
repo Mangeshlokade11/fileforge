@@ -1,0 +1,46 @@
+version: '3.9'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      MONGODB_URI: mongodb://mongo:27017/fileforge
+      JWT_SECRET: ${JWT_SECRET:-change-this-in-production}
+      SESSION_SECRET: ${SESSION_SECRET:-change-this-too}
+      APP_URL: ${APP_URL:-http://localhost:3000}
+      MAIL_HOST: ${MAIL_HOST:-smtp.gmail.com}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USER: ${MAIL_USER:-}
+      MAIL_PASS: ${MAIL_PASS:-}
+      MAIL_FROM: ${MAIL_FROM:-FileForge <noreply@fileforge.app>}
+      FREE_MONTHLY_LIMIT: ${FREE_MONTHLY_LIMIT:-10}
+      MAX_FILE_SIZE_FREE: ${MAX_FILE_SIZE_FREE:-10485760}
+      TEMP_FILE_TTL: ${TEMP_FILE_TTL:-2}
+    volumes:
+      - ./uploads:/app/uploads
+      - ./temp:/app/temp
+      - ./logs:/app/logs
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  mongo_data:

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Signing you in… — FileForge</title>
+<link rel="stylesheet" href="/css/main.css">
+<style>
+body{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg)}
+.cb-card{background:var(--bg-1);border:1px solid var(--border-2);border-radius:var(--r-xl);padding:48px 40px;text-align:center;max-width:400px;width:90%;box-shadow:0 8px 60px rgba(0,0,0,.8)}
+.cb-logo{font-family:var(--font-d);font-weight:900;font-size:18px;letter-spacing:3px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:28px;display:block}
+.cb-spinner{width:48px;height:48px;border:3px solid var(--border-2);border-top-color:var(--neon-blue);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 20px;box-shadow:0 0 14px rgba(0,245,255,.3)}
+.cb-title{font-family:var(--font-d);font-size:16px;font-weight:700;letter-spacing:.5px;margin-bottom:8px}
+.cb-sub{font-size:13px;color:var(--text-2)}
+.cb-error{color:var(--neon-pink);font-size:13px;display:none;margin-top:16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div id="toast-container"></div>
+<div class="cb-card">
+  <a href="/" class="cb-logo">FILEFORGE</a>
+  <div class="cb-spinner"></div>
+  <div class="cb-title">Signing you in…</div>
+  <div class="cb-sub">Just a moment while we complete your Google sign-in.</div>
+  <div class="cb-error" id="cb-err"></div>
+</div>
+<script src="/js/app.js"></script>
+<script>
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  var token  = params.get('token');
+  var error  = params.get('error');
+
+  if (error) {
+    document.getElementById('cb-err').textContent = decodeURIComponent(error);
+    document.getElementById('cb-err').style.display = 'block';
+    document.querySelector('.cb-spinner').style.display = 'none';
+    setTimeout(function () { window.location.href = '/login'; }, 3000);
+    return;
+  }
+
+  if (!token) {
+    document.getElementById('cb-err').textContent = 'No token received from Google. Redirecting to login…';
+    document.getElementById('cb-err').style.display = 'block';
+    setTimeout(function () { window.location.href = '/login'; }, 2000);
+    return;
+  }
+
+  // Fetch user profile with the new token
+  fetch('/api/auth/me', {
+    headers: { 'Authorization': 'Bearer ' + token }
+  })
+  .then(function (r) { return r.json(); })
+  .then(function (data) {
+    if (data.user) {
+      Auth.setSession(token, data.user);
+      // Check redirect param (passed through Google as state — simple version)
+      var next = params.get('next') || '/dashboard';
+      window.location.href = next;
+    } else {
+      throw new Error(data.error || 'Could not load user profile');
+    }
+  })
+  .catch(function (err) {
+    document.getElementById('cb-err').textContent = err.message || 'Sign-in failed. Redirecting…';
+    document.getElementById('cb-err').style.display = 'block';
+    setTimeout(function () { window.location.href = '/login'; }, 2000);
+  });
+})();
+</script>
+</body>
+</html>

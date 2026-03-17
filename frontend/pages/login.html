@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Log in — FileForge</title>
+<link rel="stylesheet" href="/css/main.css">
+<style>
+body{display:flex;flex-direction:column;min-height:100vh}
+.auth-bg{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px;position:relative;overflow:hidden}
+.auth-bg::before{content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 60% at 30% 40%,rgba(180,78,255,.08) 0%,transparent 60%),
+             radial-gradient(ellipse 50% 50% at 70% 60%,rgba(0,245,255,.06) 0%,transparent 60%)}
+.auth-bg::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);
+  background-size:48px 48px;opacity:.22;mask-image:radial-gradient(ellipse 70% 80% at 50% 50%,black,transparent)}
+.auth-card{background:var(--bg-1);border:1px solid var(--border-2);border-radius:var(--r-xl);padding:44px 40px;width:100%;max-width:440px;position:relative;z-index:1;box-shadow:0 8px 60px rgba(0,0,0,.8);animation:fadeUp .5s ease both}
+.auth-card::before{content:'';position:absolute;top:-1px;left:-1px;width:40px;height:40px;border-top:2px solid var(--neon-blue);border-left:2px solid var(--neon-blue);border-radius:var(--r-xl) 0 0 0;box-shadow:-2px -2px 10px rgba(0,245,255,.4);pointer-events:none}
+.auth-card::after{content:'';position:absolute;bottom:-1px;right:-1px;width:40px;height:40px;border-bottom:2px solid var(--neon-purple);border-right:2px solid var(--neon-purple);border-radius:0 0 var(--r-xl) 0;box-shadow:2px 2px 10px rgba(180,78,255,.4);pointer-events:none}
+.auth-logo{display:block;font-family:var(--font-d);font-weight:900;font-size:20px;letter-spacing:3px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 8px rgba(0,245,255,.5));margin-bottom:28px}
+.auth-title{font-family:var(--font-d);font-size:22px;font-weight:800;margin-bottom:4px}
+.auth-sub{font-size:13px;color:var(--text-2);margin-bottom:24px}
+.err-box{background:rgba(255,45,120,.08);border:1px solid rgba(255,45,120,.3);border-radius:var(--r);padding:12px 16px;font-size:13px;color:var(--neon-pink);margin-bottom:18px;display:none}
+.btn-google{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 20px;border-radius:var(--r);border:1px solid var(--border-2);background:var(--bg-2);color:var(--text);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;font-family:var(--font-b)}
+.btn-google:hover{border-color:rgba(66,133,244,.5);background:rgba(66,133,244,.07);box-shadow:0 0 14px rgba(66,133,244,.15)}
+.btn-google:disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
+.or-div{display:flex;align-items:center;gap:12px;margin:18px 0}
+.or-div::before,.or-div::after{content:'';flex:1;height:1px;background:var(--border)}
+.or-div span{font-size:11px;color:var(--text-3);font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.pw-wrap{position:relative}
+.pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-3);cursor:pointer;padding:4px 6px;font-size:14px;transition:color .2s;line-height:1}
+.pw-eye:hover{color:var(--neon-blue)}
+.auth-foot{text-align:center;font-size:13px;color:var(--text-2);margin-top:22px}
+.auth-foot a{color:var(--neon-blue);font-weight:600}
+</style>
+</head>
+<body>
+<div id="toast-container"></div>
+<nav class="nav" id="nav"></nav>
+<div class="auth-bg">
+  <div class="auth-card">
+    <a href="/" class="auth-logo">FILEFORGE</a>
+    <div class="auth-title">Welcome back</div>
+    <div class="auth-sub">Sign in to your account</div>
+
+    <button class="btn-google" id="google-btn" onclick="googleSignIn()" >
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
+        <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
+        <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+        <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+      </svg>
+      Continue with Google
+    </button>
+
+    <div class="or-div"><span>or sign in with email</span></div>
+
+    <div class="err-box" id="err"></div>
+    <form id="form">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" id="email" placeholder="you@example.com" autocomplete="email" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="pw-wrap">
+          <input class="form-input" type="password" id="pw" placeholder="••••••••" autocomplete="current-password" style="padding-right:44px" required>
+          <button type="button" class="pw-eye" id="eye">👁</button>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary w-full mt-8" id="btn">Sign in →</button>
+    </form>
+    <div class="auth-foot">No account? <a href="/signup">Sign up free</a></div>
+  </div>
+</div>
+<script src="/js/app.js"></script>
+<script>
+if (Auth.isLoggedIn()) window.location.href = '/dashboard';
+renderNav('login');
+
+// Show OAuth error if redirected from Google
+var urlErr = new URLSearchParams(location.search).get('error');
+if (urlErr) { var e = document.getElementById('err'); e.textContent = decodeURIComponent(urlErr); e.style.display = 'block'; }
+
+// Check Google availability
+fetch('/api/auth/google/status')
+  .then(function(r){ return r.json(); })
+  .then(function(d){ if (d.enabled) document.getElementById('google-btn').disabled = false; })
+  .catch(function(){});
+
+function googleSignIn() {
+  window.location.href = '/api/auth/google';
+}
+
+document.getElementById('eye').addEventListener('click', function() {
+  var f = document.getElementById('pw');
+  f.type = f.type === 'password' ? 'text' : 'password';
+  this.textContent = f.type === 'password' ? '👁' : '🙈';
+});
+
+document.getElementById('form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  var errEl = document.getElementById('err');
+  errEl.style.display = 'none';
+  var email = document.getElementById('email').value.trim();
+  var pw    = document.getElementById('pw').value;
+  var btn   = document.getElementById('btn');
+  setLoading(btn, true, 'Signing in…');
+  try {
+    var data = await apiFetch('/api/auth/login', { method:'POST', body:JSON.stringify({ email:email, password:pw }) });
+    Auth.setSession(data.token, data.user);
+    Toast.success('Welcome back, ' + data.user.firstName + '! 👋');
+    var next = new URLSearchParams(location.search).get('next') || '/dashboard';
+    setTimeout(function(){ window.location.href = next; }, 500);
+  } catch(err) {
+    errEl.textContent = err.message || 'Login failed';
+    errEl.style.display = 'block';
+    setLoading(btn, false);
+    btn.textContent = 'Sign in →';
+  }
+});
+</script>
+</body>
+</html>

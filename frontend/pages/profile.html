@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Profile — FileForge</title>
+<link rel="stylesheet" href="/css/main.css">
+<style>
+.playout{display:grid;grid-template-columns:270px 1fr;gap:22px;max-width:1060px;margin:0 auto;padding:34px 40px}
+/* id card */
+.idcard{background:var(--bg-1);border:1px solid var(--border-2);border-radius:var(--r-xl);padding:26px 20px;height:fit-content;position:sticky;top:86px;box-shadow:0 8px 40px rgba(0,0,0,.5);position:relative;overflow:hidden}
+.idcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad)}
+.av{width:76px;height:76px;border-radius:14px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:900;font-size:26px;color:#000;margin-bottom:14px;box-shadow:0 0 20px rgba(0,245,255,.3)}
+.p-name{font-family:var(--font-d);font-size:16px;font-weight:800;letter-spacing:.5px;line-height:1.2}
+.p-email{font-size:12px;color:var(--text-3);margin-top:3px}
+.p-plan{display:inline-flex;margin-top:10px;padding:4px 12px;border-radius:99px;font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;background:var(--neon-blue-dim);color:var(--neon-blue);border:1px solid rgba(0,245,255,.2)}
+.mini{display:flex;justify-content:space-between;align-items:center;padding:7px 0;font-size:12px;border-bottom:1px solid var(--border)}
+.mini:last-of-type{border-bottom:none}
+.mini-lbl{color:var(--text-3)}
+.mini-val{font-weight:600;font-family:var(--font-m);color:var(--text)}
+.use-wrap{margin-top:12px}
+.use-top{display:flex;justify-content:space-between;font-size:10px;color:var(--text-3);margin-bottom:5px}
+.use-bar{height:3px;background:var(--border);border-radius:99px;overflow:hidden}
+.use-fill{height:100%;background:var(--grad);border-radius:99px;transition:width .6s ease;box-shadow:0 0 6px rgba(0,245,255,.5)}
+/* sections */
+.secs{display:flex;flex-direction:column;gap:18px}
+.scard{background:var(--bg-1);border:1px solid var(--border-2);border-radius:var(--r-lg);overflow:hidden}
+.shead{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid var(--border)}
+.stitle{font-family:var(--font-d);font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+.ssub{font-size:11px;color:var(--text-3);margin-top:2px}
+.sbody{padding:22px}
+.ok-box{background:rgba(0,255,157,.07);border:1px solid rgba(0,255,157,.25);border-radius:var(--r);padding:10px 14px;font-size:13px;color:var(--neon-green);margin-bottom:14px;display:none}
+.err-box{background:rgba(255,45,120,.07);border:1px solid rgba(255,45,120,.25);border-radius:var(--r);padding:10px 14px;font-size:13px;color:var(--neon-pink);margin-bottom:14px;display:none}
+.pref-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--border)}
+.pref-row:last-child{border-bottom:none;padding-bottom:0}
+.pref-lbl{font-size:13px;font-weight:600}
+.pref-desc{font-size:11px;color:var(--text-3);margin-top:2px}
+.danger{background:rgba(255,45,120,.04);border:1px solid rgba(255,45,120,.15);border-radius:var(--r-lg);padding:20px 22px}
+.dan-title{font-family:var(--font-d);font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--neon-pink);margin-bottom:6px}
+.dan-desc{font-size:12px;color:var(--text-3);margin-bottom:14px;line-height:1.6}
+@media(max-width:800px){.playout{grid-template-columns:1fr;padding:18px 14px}.idcard{position:static}.form-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="toast-container"></div>
+<nav class="nav" id="nav"></nav>
+<div class="playout">
+  <!-- ID Card -->
+  <div>
+    <div class="idcard">
+      <div class="av" id="av">--</div>
+      <div class="p-name"  id="pn">Loading…</div>
+      <div class="p-email" id="pe"></div>
+      <span class="p-plan" id="pp">Free</span>
+      <div class="divider"></div>
+      <div class="mini"><span class="mini-lbl">Total conversions</span><span class="mini-val" id="mi0">0</span></div>
+      <div class="mini"><span class="mini-lbl">This month</span><span class="mini-val" id="mi1">0</span></div>
+      <div class="mini"><span class="mini-lbl">Data processed</span><span class="mini-val" id="mi2">—</span></div>
+      <div class="mini"><span class="mini-lbl">Member since</span><span class="mini-val" id="mi3">—</span></div>
+      <div class="mini"><span class="mini-lbl">Last login</span><span class="mini-val" id="mi4">—</span></div>
+      <div class="use-wrap">
+        <div class="use-top"><span>Monthly usage</span><span id="utxt">0/10</span></div>
+        <div class="use-bar"><div class="use-fill" id="ufill" style="width:0%"></div></div>
+      </div>
+      <div class="divider"></div>
+      <a href="/dashboard" class="btn btn-outline w-full" style="font-size:12px">← Dashboard</a>
+    </div>
+  </div>
+  <!-- Sections -->
+  <div class="secs">
+    <!-- Personal info -->
+    <div class="scard">
+      <div class="shead"><div><div class="stitle">Personal Information</div><div class="ssub">Update your display name</div></div></div>
+      <div class="sbody">
+        <div class="ok-box" id="prof-ok">✓ Profile updated!</div>
+        <div class="err-box" id="prof-err"></div>
+        <form id="prof-form">
+          <div class="form-row">
+            <div class="form-group"><label class="form-label" for="fn">First name</label><input class="form-input" type="text" id="fn" required></div>
+            <div class="form-group"><label class="form-label" for="ln">Last name</label><input class="form-input" type="text" id="ln" required></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="em">Email</label>
+            <input class="form-input" type="email" id="em" disabled>
+            <div class="form-hint">Email cannot be changed</div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:10px">
+            <button type="button" class="btn btn-outline btn-sm" id="prof-cancel">Cancel</button>
+            <button type="submit" class="btn btn-secondary btn-sm" id="prof-save">Save changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!-- Preferences -->
+    <div class="scard">
+      <div class="shead"><div><div class="stitle">Notifications</div><div class="ssub">Email delivery preferences</div></div></div>
+      <div class="sbody">
+        <div class="pref-row">
+          <div><div class="pref-lbl">Email notifications</div><div class="pref-desc">Account activity alerts</div></div>
+          <label class="toggle-wrap"><input type="checkbox" id="p-notifs" onchange="savePref()"><span class="toggle-track"></span></label>
+        </div>
+        <div class="pref-row">
+          <div><div class="pref-lbl">Email converted files</div><div class="pref-desc">Automatically email output after each conversion</div></div>
+          <label class="toggle-wrap"><input type="checkbox" id="p-send" onchange="savePref()"><span class="toggle-track"></span></label>
+        </div>
+      </div>
+    </div>
+    <!-- Password -->
+    <div class="scard">
+      <div class="shead"><div><div class="stitle">Change Password</div><div class="ssub">Minimum 6 characters</div></div></div>
+      <div class="sbody">
+        <div class="ok-box" id="pw-ok">✓ Password changed!</div>
+        <div class="err-box" id="pw-err"></div>
+        <form id="pw-form">
+          <div class="form-group"><label class="form-label" for="pwc">Current password</label><input class="form-input" type="password" id="pwc" placeholder="••••••••" required></div>
+          <div class="form-group"><label class="form-label" for="pwn">New password</label><input class="form-input" type="password" id="pwn" placeholder="Min 6 chars" required minlength="6"></div>
+          <div class="form-group"><label class="form-label" for="pwf">Confirm new password</label><input class="form-input" type="password" id="pwf" placeholder="Repeat password" required></div>
+          <div style="display:flex;justify-content:flex-end"><button type="submit" class="btn btn-secondary btn-sm" id="pw-save">Update password</button></div>
+        </form>
+      </div>
+    </div>
+    <!-- Danger -->
+    <div class="danger">
+      <div class="dan-title">⚠ Danger Zone</div>
+      <div class="dan-desc">Permanently delete your account and all data. This is irreversible.</div>
+      <button class="btn btn-danger btn-sm" onclick="Toast.info('Account deletion disabled in demo mode')">Delete account</button>
+    </div>
+  </div>
+</div>
+<script src="/js/app.js"></script>
+<script>
+requireAuth();
+renderNav('profile');
+var me = null;
+
+async function load() {
+  try {
+    var d = await apiFetch('/api/auth/me');
+    me = d.user; Auth.setSession(Auth.getToken(), me); fill(me);
+  } catch(e) { if(e.status===401){Auth.clearSession();window.location.href='/login';} Toast.error('Failed to load profile'); }
+}
+
+function fill(u) {
+  var init = ((u.firstName||'')[0]+(u.lastName||'')[0]).toUpperCase();
+  document.getElementById('av').textContent = init;
+  document.getElementById('pn').textContent = u.firstName+' '+u.lastName;
+  document.getElementById('pe').textContent = u.email;
+  document.getElementById('pp').textContent = (u.plan||'free').toUpperCase();
+  document.getElementById('mi0').textContent = u.totalConversions||0;
+  document.getElementById('mi1').textContent = (u.monthlyCount||0)+' / 10';
+  document.getElementById('mi2').textContent = formatBytes(u.storageUsed||0);
+  document.getElementById('mi3').textContent = new Date(u.createdAt).toLocaleDateString('en-US',{month:'short',year:'numeric'});
+  document.getElementById('mi4').textContent = u.lastLogin ? timeAgo(u.lastLogin) : '—';
+  var pct = Math.min(100,Math.round(((u.monthlyCount||0)/10)*100));
+  document.getElementById('utxt').textContent = (u.monthlyCount||0)+'/10';
+  document.getElementById('ufill').style.width = pct+'%';
+  document.getElementById('fn').value = u.firstName||'';
+  document.getElementById('ln').value = u.lastName||'';
+  document.getElementById('em').value = u.email||'';
+  var p = u.preferences||{};
+  document.getElementById('p-notifs').checked = p.emailNotifications !== false;
+  document.getElementById('p-send').checked   = p.sendConvertedFile  !== false;
+}
+
+document.getElementById('prof-cancel').addEventListener('click', function() {
+  if(me){ document.getElementById('fn').value=me.firstName; document.getElementById('ln').value=me.lastName; }
+  document.getElementById('prof-ok').style.display = document.getElementById('prof-err').style.display = 'none';
+});
+
+document.getElementById('prof-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  document.getElementById('prof-ok').style.display = document.getElementById('prof-err').style.display = 'none';
+  var fn = document.getElementById('fn').value.trim();
+  var ln = document.getElementById('ln').value.trim();
+  var btn = document.getElementById('prof-save');
+  if(!fn||!ln){ document.getElementById('prof-err').textContent='Both name fields are required.'; document.getElementById('prof-err').style.display='block'; return; }
+  setLoading(btn, true, 'Saving…');
+  try {
+    var d = await apiFetch('/api/auth/profile', {method:'PATCH', body:JSON.stringify({firstName:fn, lastName:ln})});
+    Auth.setSession(Auth.getToken(), d.user); me=d.user; fill(d.user); renderNav('profile');
+    document.getElementById('prof-ok').style.display='block'; Toast.success('Profile updated');
+  } catch(e) { document.getElementById('prof-err').textContent=e.message||'Update failed'; document.getElementById('prof-err').style.display='block'; }
+  finally { setLoading(btn,false); btn.textContent='Save changes'; }
+});
+
+async function savePref() {
+  try {
+    var d = await apiFetch('/api/auth/profile',{method:'PATCH',body:JSON.stringify({preferences:{
+      emailNotifications: document.getElementById('p-notifs').checked,
+      sendConvertedFile:  document.getElementById('p-send').checked,
+    }})});
+    Auth.setSession(Auth.getToken(), d.user); Toast.success('Preferences saved');
+  } catch { Toast.error('Failed to save'); }
+}
+
+document.getElementById('pw-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  document.getElementById('pw-ok').style.display = document.getElementById('pw-err').style.display = 'none';
+  var cur=document.getElementById('pwc').value, nw=document.getElementById('pwn').value, cf=document.getElementById('pwf').value;
+  var btn=document.getElementById('pw-save');
+  if(nw!==cf){ document.getElementById('pw-err').textContent='Passwords do not match'; document.getElementById('pw-err').style.display='block'; return; }
+  if(nw.length<6){ document.getElementById('pw-err').textContent='New password too short'; document.getElementById('pw-err').style.display='block'; return; }
+  setLoading(btn,true,'Updating…');
+  try {
+    await apiFetch('/api/auth/password',{method:'PATCH',body:JSON.stringify({currentPassword:cur,newPassword:nw})});
+    document.getElementById('pw-form').reset(); document.getElementById('pw-ok').style.display='block'; Toast.success('Password updated');
+  } catch(e){ document.getElementById('pw-err').textContent=e.message||'Failed'; document.getElementById('pw-err').style.display='block'; }
+  finally { setLoading(btn,false); btn.textContent='Update password'; }
+});
+
+load();
+</script>
+</body>
+</html>
